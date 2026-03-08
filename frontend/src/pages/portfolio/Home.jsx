@@ -5,6 +5,7 @@ import ProductCard from "../../components/ProductCard.jsx";
 import AchievementCard from "../../components/AchievementCard.jsx";
 import VideoCard from "../../components/VideoCard.jsx";
 import api from "../../utils/axios.js";
+import { getEmbedUrl } from "../../utils/videoEmbed.js";
 
 const Home = () => {
   const [featuredProducts, setFeaturedProducts] = useState([]);
@@ -129,7 +130,7 @@ const Home = () => {
             </button>
             <div className="aspect-video w-full">
               <iframe
-                src={activeVideo.url}
+                src={getEmbedUrl(activeVideo.url)}
                 title={activeVideo.title}
                 className="h-full w-full"
                 allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"

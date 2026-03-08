@@ -1,7 +1,7 @@
 const SCRIPT_URL = "https://checkout.razorpay.com/v1/checkout.js";
 
 export function loadRazorpayScript() {
-  return new Promise((resolve) => {
+  return new Promise((resolve, reject) => {
     if (typeof window !== "undefined" && window.Razorpay) {
       resolve();
       return;
@@ -14,9 +14,10 @@ export function loadRazorpayScript() {
           resolve();
         }
       }, 50);
-      setTimeout(() => {
+      const timeout = setTimeout(() => {
         clearInterval(check);
-        resolve();
+        if (window.Razorpay) resolve();
+        else reject(new Error("Razorpay script load timeout"));
       }, 5000);
       return;
     }
@@ -24,7 +25,7 @@ export function loadRazorpayScript() {
     script.src = SCRIPT_URL;
     script.async = true;
     script.onload = () => resolve();
-    script.onerror = () => resolve(); // Resolve anyway so we can show a proper error
-    document.body.appendChild(script);
+    script.onerror = () => reject(new Error("Failed to load Razorpay script"));
+    document.head.appendChild(script);
   });
 }

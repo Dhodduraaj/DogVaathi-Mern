@@ -16,6 +16,18 @@ export const AuthProvider = ({ children }) => {
     setLoading(false);
   }, []);
 
+  const fetchUser = async () => {
+    try {
+      const res = await api.get("/auth/me");
+      const userData = res.data;
+      localStorage.setItem("dogvaathi_user", JSON.stringify(userData));
+      setUser(userData);
+      return userData;
+    } catch {
+      return null;
+    }
+  };
+
   const login = async (email, password) => {
     const res = await api.post("/auth/login", { email, password });
     localStorage.setItem("dogvaathi_token", res.data.token);
@@ -41,7 +53,7 @@ export const AuthProvider = ({ children }) => {
   };
 
   return (
-    <AuthContext.Provider value={{ user, loading, login, register, logout }}>
+    <AuthContext.Provider value={{ user, loading, login, register, logout, fetchUser }}>
       {children}
     </AuthContext.Provider>
   );

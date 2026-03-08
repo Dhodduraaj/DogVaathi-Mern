@@ -1,9 +1,12 @@
 import React, { useEffect, useState } from "react";
+import rdr from "../images/rdr.jpg";
+import fightclub from "../images/fightclub.jpg";
+import daredevil from "../images/daredevil.jpg";
 
 const defaultSlides = [
-  "/images/dog-training-1.jpg",
-  "/images/dog-training-2.jpg",
-  "/images/dog-training-3.jpg",
+  "rdr.jpg",
+  "fightclub.jpg",
+  "daredevil.jpg",
 ];
 
 const Carousel = ({ slides = defaultSlides, interval = 5000 }) => {
@@ -33,7 +36,7 @@ const Carousel = ({ slides = defaultSlides, interval = 5000 }) => {
         {slides.map((src, i) => (
           <div key={i} className="min-w-full">
             <img
-              src={src}
+              src={`../src/images/${src}`}
               alt="Dog training"
               className="h-64 w-full object-cover md:h-80"
             />

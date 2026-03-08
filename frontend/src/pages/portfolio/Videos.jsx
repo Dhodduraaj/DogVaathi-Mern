@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import api from "../../utils/axios.js";
 import VideoCard from "../../components/VideoCard.jsx";
+import { getEmbedUrl } from "../../utils/videoEmbed.js";
 
 const Videos = () => {
   const [videos, setVideos] = useState([]);
@@ -51,7 +52,7 @@ const Videos = () => {
             </button>
             <div className="aspect-video w-full">
               <iframe
-                src={active.url}
+                src={getEmbedUrl(active.url)}
                 title={active.title}
                 className="h-full w-full"
                 allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"

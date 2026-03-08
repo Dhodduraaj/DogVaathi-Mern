@@ -5,12 +5,23 @@ import Product from "../models/Product.js";
 import User from "../models/User.js";
 
 const getRazorpayInstance = () => {
-  if (!process.env.RAZORPAY_KEY_ID || !process.env.RAZORPAY_KEY_SECRET) {
+  const keyId = (process.env.RAZORPAY_KEY_ID || "").trim();
+  const keySecret = (process.env.RAZORPAY_KEY_SECRET || "").trim();
+  if (!keyId || !keySecret) {
     return null;
   }
   return new Razorpay({
-    key_id: process.env.RAZORPAY_KEY_ID,
-    key_secret: process.env.RAZORPAY_KEY_SECRET,
+    key_id: keyId,
+    key_secret: keySecret,
+  });
+};
+
+export const checkPaymentConfig = async (req, res) => {
+  const hasKeys =
+    !!process.env.RAZORPAY_KEY_ID && !!process.env.RAZORPAY_KEY_SECRET;
+  res.json({
+    configured: hasKeys,
+    keyPrefix: hasKeys ? process.env.RAZORPAY_KEY_ID?.slice(0, 10) + "..." : null,
   });
 };
 
@@ -70,8 +81,15 @@ export const createRazorpayOrder = async (req, res) => {
 
     const { total, populatedItems } = await validateCartAndGetTotal(items);
 
+    const amountPaise = Math.round(total * 100);
+    if (amountPaise < 100) {
+      return res
+        .status(400)
+        .json({ message: "Minimum order amount for online payment is ₹1" });
+    }
+
     const options = {
-      amount: Math.round(total * 100), // paise
+      amount: Number(amountPaise),
       currency: "INR",
       receipt: `dogvaathi_${Date.now()}`,
     };
@@ -79,14 +97,19 @@ export const createRazorpayOrder = async (req, res) => {
 
     res.json({
       orderId: razorOrder.id,
-      amount: razorOrder.amount,
-      currency: razorOrder.currency,
+      amount: Number(razorOrder.amount),
+      currency: razorOrder.currency || "INR",
       key: process.env.RAZORPAY_KEY_ID,
     });
   } catch (error) {
     console.error("Create Razorpay order error:", error);
-    const msg =
-      error.message || "Payment initialization failed";
+    let msg = error.message || "Payment initialization failed";
+    if (error.statusCode === 401 || error.error?.description === "Authentication failed") {
+      msg =
+        "Razorpay keys invalid. Regenerate Key ID & Secret together in Razorpay Dashboard (Test Mode), update backend .env, and restart the server.";
+    } else if (error.error?.description) {
+      msg = error.error.description;
+    }
     res.status(400).json({ message: msg });
   }
 };
@@ -137,12 +160,17 @@ export const verifyPayment = async (req, res) => {
     });
 
     await reduceStock(populatedItems);
-    await User.findByIdAndUpdate(req.user._id, { $set: { cart: [] } });
+    await User.findByIdAndUpdate(req.user._id, {
+      $set: { cart: [], defaultAddress: shippingAddress || {} },
+    });
 
     res.json({ success: true, order });
   } catch (error) {
     console.error("Verify payment error:", error);
-    const msg = error.message || "Payment verification failed";
+    let msg = error.message || "Payment verification failed";
+    if (error.statusCode === 400 || error.error?.description) {
+      msg = error.error?.description || error.description || msg;
+    }
     res.status(400).json({ message: msg });
   }
 };

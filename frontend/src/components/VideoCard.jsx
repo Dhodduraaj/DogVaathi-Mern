@@ -1,6 +1,12 @@
 import React from "react";
+import { getYoutubeThumbnail } from "../utils/videoEmbed.js";
 
 const VideoCard = ({ video, onPlay }) => {
+  const thumbnail =
+    video.thumbnailUrl ||
+    getYoutubeThumbnail(video.url) ||
+    "/images/dog-video-placeholder.jpg";
+
   return (
     <button
       type="button"
@@ -9,7 +15,7 @@ const VideoCard = ({ video, onPlay }) => {
     >
       <div className="relative">
         <img
-          src={video.thumbnailUrl || "/images/dog-video-placeholder.jpg"}
+          src={thumbnail}
           alt={video.title}
           className="h-40 w-full object-cover"
         />

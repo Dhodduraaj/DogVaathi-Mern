@@ -9,6 +9,20 @@ const cartItemSchema = new mongoose.Schema(
   { _id: false }
 );
 
+const addressSchema = new mongoose.Schema(
+  {
+    name: { type: String },
+    phone: { type: String },
+    addressLine1: { type: String },
+    addressLine2: { type: String },
+    city: { type: String },
+    state: { type: String },
+    postalCode: { type: String },
+    country: { type: String, default: "India" },
+  },
+  { _id: false }
+);
+
 const userSchema = new mongoose.Schema(
   {
     name: { type: String, required: true },
@@ -20,6 +34,7 @@ const userSchema = new mongoose.Schema(
       default: "customer",
     },
     cart: [cartItemSchema],
+    defaultAddress: addressSchema,
   },
   { timestamps: true }
 );

@@ -28,9 +28,9 @@ export const createOrder = async (req, res) => {
   try {
     const { items, shippingAddress, paymentMethod } = req.body;
 
-    if (paymentMethod !== "COD") {
+    if (!["COD", "UPI"].includes(paymentMethod)) {
       return res.status(400).json({
-        message: "Use payment flow for Razorpay. This endpoint is for COD only.",
+        message: "Use payment flow for Razorpay. This endpoint is for COD or UPI only.",
       });
     }
 
@@ -65,14 +65,16 @@ export const createOrder = async (req, res) => {
       user: req.user._id,
       items: populatedItems,
       totalAmount,
-      paymentMethod: "COD",
+      paymentMethod: paymentMethod || "COD",
       paymentStatus: "Pending",
       status: "pending",
       shippingAddress: shippingAddress || {},
     });
 
     await reduceStock(populatedItems);
-    await User.findByIdAndUpdate(req.user._id, { $set: { cart: [] } });
+    await User.findByIdAndUpdate(req.user._id, {
+      $set: { cart: [], defaultAddress: shippingAddress || {} },
+    });
 
     res.status(201).json(order);
   } catch (error) {
