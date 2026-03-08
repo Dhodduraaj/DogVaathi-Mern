@@ -1,0 +1,91 @@
+import React, { useState } from "react";
+import { Link, useNavigate } from "react-router-dom";
+import { useAuth } from "../../context/AuthContext.jsx";
+import { useCart } from "../../context/CartContext.jsx";
+import toast from "react-hot-toast";
+
+const Register = () => {
+  const { register } = useAuth();
+  const { refreshCartFromServer } = useCart();
+  const navigate = useNavigate();
+  const [form, setForm] = useState({ name: "", email: "", password: "" });
+  const [loading, setLoading] = useState(false);
+
+  const handleChange = (e) => {
+    setForm({ ...form, [e.target.name]: e.target.value });
+  };
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    setLoading(true);
+    try {
+      await register(form);
+      refreshCartFromServer();
+      navigate("/");
+    } catch (err) {
+      const msg =
+        err?.response?.data?.message ||
+        err?.response?.data?.errors?.[0]?.msg ||
+        "Registration failed";
+      toast.error(msg);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  return (
+    <div className="flex w-full flex-col gap-6 rounded-2xl border border-slate-200 bg-white p-6 shadow-xl dark:border-slate-800 dark:bg-slate-900/80 sm:p-8">
+      <h1 className="text-xl font-semibold text-slate-900 dark:text-slate-50">Create account</h1>
+      <form onSubmit={handleSubmit} className="space-y-4 text-sm">
+        <div className="space-y-1">
+          <label className="text-xs text-slate-600 dark:text-slate-300">Name</label>
+          <input
+            name="name"
+            value={form.name}
+            onChange={handleChange}
+            required
+            className="w-full rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm text-slate-900 outline-none focus:border-brand-500 dark:border-slate-700 dark:bg-slate-950 dark:text-slate-100"
+          />
+        </div>
+        <div className="space-y-1">
+          <label className="text-xs text-slate-600 dark:text-slate-300">Email</label>
+          <input
+            name="email"
+            type="email"
+            value={form.email}
+            onChange={handleChange}
+            required
+            className="w-full rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm text-slate-900 outline-none focus:border-brand-500 dark:border-slate-700 dark:bg-slate-950 dark:text-slate-100"
+          />
+        </div>
+        <div className="space-y-1">
+          <label className="text-xs text-slate-600 dark:text-slate-300">Password</label>
+          <input
+            name="password"
+            type="password"
+            value={form.password}
+            onChange={handleChange}
+            required
+            className="w-full rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm text-slate-900 outline-none focus:border-brand-500 dark:border-slate-700 dark:bg-slate-950 dark:text-slate-100"
+          />
+        </div>
+        <button
+          type="submit"
+          disabled={loading}
+          className="btn-primary w-full justify-center"
+        >
+          {loading ? "Creating..." : "Create account"}
+        </button>
+      </form>
+      <p className="text-xs text-slate-500 dark:text-slate-400">
+        Already have an account?{" "}
+        <Link to="/auth/login" className="text-brand-500 hover:text-brand-600 dark:text-brand-400 dark:hover:text-brand-300">
+          Login
+        </Link>
+      </p>
+    </div>
+  );
+};
+
+export default Register;
+

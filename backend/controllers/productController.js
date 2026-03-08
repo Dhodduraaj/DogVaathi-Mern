@@ -1,0 +1,179 @@
+import { validationResult } from "express-validator";
+import Product from "../models/Product.js";
+import cloudinary from "../config/cloudinary.js";
+
+// Public: get distinct categories for filter dropdown
+export const getCategories = async (req, res) => {
+  try {
+    const categories = await Product.distinct("category", { isActive: true });
+    res.json(categories.sort());
+  } catch (error) {
+    console.error("Get categories error:", error);
+    res.status(500).json({ message: "Server error" });
+  }
+};
+
+// Public: list products with search/filter/sort
+export const getProducts = async (req, res) => {
+  try {
+    const { search, category, sort, minPrice, maxPrice } = req.query;
+
+    const filter = { isActive: true };
+    if (search) {
+      filter.name = { $regex: search, $options: "i" };
+    }
+    if (category) {
+      filter.category = category;
+    }
+    if (minPrice || maxPrice) {
+      filter.price = {};
+      if (minPrice) filter.price.$gte = Number(minPrice);
+      if (maxPrice) filter.price.$lte = Number(maxPrice);
+    }
+
+    let query = Product.find(filter);
+
+    if (sort === "price_asc") query = query.sort({ price: 1 });
+    else if (sort === "price_desc") query = query.sort({ price: -1 });
+    else if (sort === "newest") query = query.sort({ createdAt: -1 });
+
+    const products = await query.exec();
+    res.json(products);
+  } catch (error) {
+    console.error("Get products error:", error);
+    res.status(500).json({ message: "Server error" });
+  }
+};
+
+export const getProductById = async (req, res) => {
+  try {
+    const product = await Product.findById(req.params.id);
+    if (!product || !product.isActive) {
+      return res.status(404).json({ message: "Product not found" });
+    }
+    res.json(product);
+  } catch (error) {
+    console.error("Get product error:", error);
+    res.status(500).json({ message: "Server error" });
+  }
+};
+
+// Admin: create product, supports optional image upload via Cloudinary
+export const createProduct = async (req, res) => {
+  const errors = validationResult(req);
+  if (!errors.isEmpty()) {
+    return res.status(400).json({ errors: errors.array() });
+  }
+
+  try {
+    const { name, description, price, category, stock, tags } = req.body;
+    let imageUrl = req.body.imageUrl;
+    let image = undefined;
+
+    if (req.file && req.file.buffer) {
+      try {
+        const b64 = req.file.buffer.toString("base64");
+        const dataUri = `data:${req.file.mimetype || "image/jpeg"};base64,${b64}`;
+        const uploadResult = await cloudinary.uploader.upload(dataUri, {
+          folder: "dogvaathi/products",
+        });
+        imageUrl = uploadResult.secure_url;
+        image = { url: uploadResult.secure_url, public_id: uploadResult.public_id };
+      } catch (uploadErr) {
+        console.error("Cloudinary upload error:", uploadErr?.message || uploadErr);
+        throw new Error(uploadErr?.message || "Image upload failed. Check Cloudinary config.");
+      }
+    }
+
+    const product = await Product.create({
+      name,
+      description,
+      price: Number(price),
+      category,
+      stock: Number(stock) || 0,
+      tags,
+      imageUrl,
+      image,
+    });
+
+    res.status(201).json(product);
+  } catch (error) {
+    console.error("Create product error:", error);
+    const msg =
+      error?.message ||
+      error?.error?.message ||
+      (typeof error === "string" ? error : "Server error");
+    res.status(500).json({ message: msg });
+  }
+};
+
+export const updateProduct = async (req, res) => {
+  const errors = validationResult(req);
+  if (!errors.isEmpty()) {
+    return res.status(400).json({ errors: errors.array() });
+  }
+
+  try {
+    const { name, description, price, category, stock, tags, isActive } =
+      req.body;
+    let imageUrl = req.body.imageUrl;
+    let image = undefined;
+
+    if (req.file && req.file.buffer) {
+      try {
+        const b64 = req.file.buffer.toString("base64");
+        const dataUri = `data:${req.file.mimetype || "image/jpeg"};base64,${b64}`;
+        const uploadResult = await cloudinary.uploader.upload(dataUri, {
+          folder: "dogvaathi/products",
+        });
+        imageUrl = uploadResult.secure_url;
+        image = { url: uploadResult.secure_url, public_id: uploadResult.public_id };
+      } catch (uploadErr) {
+        console.error("Cloudinary upload error:", uploadErr?.message || uploadErr);
+        throw new Error(uploadErr?.message || "Image upload failed. Check Cloudinary config.");
+      }
+    }
+
+    const product = await Product.findByIdAndUpdate(
+      req.params.id,
+      {
+        name,
+        description,
+        price: price != null ? Number(price) : undefined,
+        category,
+        stock: stock != null ? Number(stock) : undefined,
+        tags,
+        isActive,
+        ...(imageUrl && { imageUrl }),
+        ...(image && { image }),
+      },
+      { new: true }
+    );
+
+    if (!product) {
+      return res.status(404).json({ message: "Product not found" });
+    }
+    res.json(product);
+  } catch (error) {
+    console.error("Update product error:", error);
+    const msg =
+      error?.message ||
+      error?.error?.message ||
+      (typeof error === "string" ? error : "Server error");
+    res.status(500).json({ message: msg });
+  }
+};
+
+export const deleteProduct = async (req, res) => {
+  try {
+    const product = await Product.findByIdAndDelete(req.params.id);
+    if (!product) {
+      return res.status(404).json({ message: "Product not found" });
+    }
+    res.json({ message: "Product deleted" });
+  } catch (error) {
+    console.error("Delete product error:", error);
+    res.status(500).json({ message: "Server error" });
+  }
+};
+

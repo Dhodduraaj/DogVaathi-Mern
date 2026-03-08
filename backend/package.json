@@ -1,0 +1,41 @@
+{
+  "name": "dogvaathi-backend",
+  "version": "1.0.0",
+  "description": "Dog Vaathi backend API (portfolio + dog supplements e-commerce) built with Node, Express, MongoDB",
+  "main": "server.js",
+  "type": "module",
+  "scripts": {
+    "start": "node server.js",
+    "dev": "nodemon server.js",
+    "check-env": "node scripts/checkEnv.js",
+    "create-admin": "node scripts/createAdmin.js"
+  },
+  "keywords": [
+    "express",
+    "mongodb",
+    "ecommerce",
+    "razorpay",
+    "dog",
+    "portfolio"
+  ],
+  "author": "",
+  "license": "MIT",
+  "dependencies": {
+    "bcrypt": "^5.1.1",
+    "cloudinary": "^1.41.3",
+    "cookie-parser": "^1.4.6",
+    "cors": "^2.8.5",
+    "dotenv": "^16.4.5",
+    "express": "^4.19.2",
+    "express-validator": "^7.2.1",
+    "jsonwebtoken": "^9.0.2",
+    "mongoose": "^8.5.0",
+    "morgan": "^1.10.0",
+    "multer": "^1.4.5-lts.1",
+    "nodemailer": "^8.0.1",
+    "razorpay": "^2.9.4"
+  },
+  "devDependencies": {
+    "nodemon": "^3.1.4"
+  }
+}
