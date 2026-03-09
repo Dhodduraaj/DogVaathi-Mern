@@ -13,6 +13,8 @@ const AdminVideos = () => {
   const [items, setItems] = useState([]);
   const [form, setForm] = useState(emptyForm);
   const [editingId, setEditingId] = useState(null);
+  const [imageFile, setImageFile] = useState(null);
+  const [imagePreview, setImagePreview] = useState(null);
 
   const load = async () => {
     const res = await api.get("/admin/videos");
@@ -27,21 +29,45 @@ const AdminVideos = () => {
     setForm({ ...form, [e.target.name]: e.target.value });
   };
 
+  const handleImageChange = (e) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      if (!file.type.startsWith("image/")) {
+        toast.error("Please select an image file");
+        return;
+      }
+      setImageFile(file);
+      setImagePreview(URL.createObjectURL(file));
+    } else {
+      setImageFile(null);
+      setImagePreview(null);
+    }
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
+      const payload = new FormData();
+      payload.append("title", form.title);
+      payload.append("platform", form.platform || "instagram");
+      payload.append("url", form.url);
+      if (form.thumbnailUrl) payload.append("thumbnailUrl", form.thumbnailUrl);
+      if (imageFile) payload.append("image", imageFile);
+
       if (editingId) {
-        await api.put(`/admin/videos/${editingId}`, form);
+        await api.put(`/admin/videos/${editingId}`, payload);
         toast.success("Video updated");
         setEditingId(null);
       } else {
-        await api.post("/admin/videos", form);
+        await api.post("/admin/videos", payload);
         toast.success("Video added");
       }
       setForm(emptyForm);
+      setImageFile(null);
+      setImagePreview(null);
       load();
-    } catch {
-      toast.error("Save failed");
+    } catch (err) {
+      toast.error(err?.response?.data?.message || "Save failed");
     }
   };
 
@@ -53,6 +79,8 @@ const AdminVideos = () => {
       thumbnailUrl: v.thumbnailUrl || "",
     });
     setEditingId(v._id);
+    setImageFile(null);
+    setImagePreview(v.thumbnailUrl || null);
   };
 
   const handleDelete = async (id) => {
@@ -73,13 +101,15 @@ const AdminVideos = () => {
   const cancelEdit = () => {
     setEditingId(null);
     setForm(emptyForm);
+    setImageFile(null);
+    setImagePreview(null);
   };
 
   return (
-    <div className="space-y-6 text-sm">
+    <div className="space-y-6 text-lg">
       <header>
         <h1 className="text-2xl font-semibold text-slate-50">Videos</h1>
-        <p className="text-sm text-slate-300">
+        <p className="text-lg text-slate-300">
           Add portfolio videos. Use the video embed URL (e.g. Instagram). For thumbnails, upload an image to Cloudinary and paste the URL.
         </p>
       </header>
@@ -119,15 +149,36 @@ const AdminVideos = () => {
             className="w-full rounded-lg border border-slate-700 bg-slate-950 px-3 py-2 text-xs text-slate-100 outline-none focus:border-brand-500"
           />
         </div>
-        <div className="space-y-1">
-          <label className="text-xs text-slate-300">Thumbnail URL (optional)</label>
-          <input
-            name="thumbnailUrl"
-            value={form.thumbnailUrl}
-            onChange={handleChange}
-            placeholder="https://res.cloudinary.com/... or any image URL"
-            className="w-full rounded-lg border border-slate-700 bg-slate-950 px-3 py-2 text-xs text-slate-100 outline-none focus:border-brand-500"
-          />
+        <div className="grid gap-3 md:grid-cols-2">
+          <div className="space-y-1">
+            <label className="text-xs text-slate-300">Thumbnail URL (Drive link / external optional)</label>
+            <input
+              name="thumbnailUrl"
+              value={form.thumbnailUrl}
+              onChange={handleChange}
+              placeholder="https://drive.google.com/... or any image URL"
+              className="w-full rounded-lg border border-slate-700 bg-slate-950 px-3 py-2 text-xs text-slate-100 outline-none focus:border-brand-500"
+            />
+          </div>
+          <div className="space-y-1">
+            <label className="text-xs text-slate-300">Or Upload Thumbnail</label>
+            <input
+              key={editingId || "new"}
+              type="file"
+              accept="image/*"
+              onChange={handleImageChange}
+              className="w-full rounded-lg border border-slate-700 bg-slate-950 px-3 py-2 text-xs text-slate-100 file:mr-2 file:rounded file:border-0 file:bg-brand-500 file:px-3 file:py-1 file:text-xs file:text-white"
+            />
+            {imagePreview && (
+              <div className="mt-2">
+                <img
+                  src={imagePreview}
+                  alt="Preview"
+                  className="h-12 w-20 rounded-lg border border-slate-700 object-cover"
+                />
+              </div>
+            )}
+          </div>
         </div>
         <div className="flex gap-2">
           <button type="submit" className="btn-primary px-4 py-2 text-xs">

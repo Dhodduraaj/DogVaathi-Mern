@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import api from "../../utils/axios.js";
 import VideoCard from "../../components/VideoCard.jsx";
+import SocialMediaShowcase from "../../components/SocialMediaShowcase.jsx";
 import { getEmbedUrl } from "../../utils/videoEmbed.js";
 
 const Videos = () => {
@@ -20,12 +21,13 @@ const Videos = () => {
   }, []);
 
   return (
-    <div className="w-full space-y-6">
-      <header className="space-y-2">
-        <h1 className="text-2xl font-semibold text-brand-600 dark:text-slate-50">
-          Instagram Training Videos
-        </h1>
-        <p className="max-w-2xl text-sm text-[#333333] dark:text-slate-300">
+    <div className="w-full space-y-12 animate-fade-in pb-12">
+      <div className="space-y-6">
+        <header className="space-y-2">
+          <h1 className="text-3xl font-bold tracking-tight text-brand-600 dark:text-slate-50">
+            Training Videos
+          </h1>
+          <p className="max-w-2xl text-lg text-[#333333] dark:text-slate-300">
           Real training sessions, behavior breakdowns, and behind-the-scenes
           content from Dog Vaathi&apos;s Instagram.
         </p>
@@ -40,6 +42,11 @@ const Videos = () => {
           </p>
         )}
       </div>
+      </div>
+
+      {/* Social Media Section */}
+      <hr className="border-cream-200 dark:border-slate-800" />
+      <SocialMediaShowcase />
 
       {active && (
         <div className="fixed inset-0 z-30 flex items-center justify-center bg-black/80 p-4">
@@ -59,7 +66,7 @@ const Videos = () => {
                 allowFullScreen
               />
             </div>
-            <div className="px-4 py-3 text-sm text-slate-200">
+            <div className="px-4 py-3 text-lg text-slate-200">
               {active.title}
             </div>
           </div>

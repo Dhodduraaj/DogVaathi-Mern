@@ -18,7 +18,7 @@ const AdminLayout = ({ children }) => {
       )}
 
       <aside
-        className={`fixed inset-y-0 left-0 z-50 flex w-56 flex-col border-r border-slate-200 bg-white px-4 py-6 text-sm transition-transform dark:border-slate-800 dark:bg-slate-900/95 md:static md:translate-x-0 ${
+        className={`fixed inset-y-0 left-0 z-50 flex w-56 flex-col border-r border-slate-200 bg-white px-4 py-6 text-lg transition-transform dark:border-slate-800 dark:bg-slate-900/95 md:static md:translate-x-0 ${
           sidebarOpen ? "translate-x-0" : "-translate-x-full"
         }`}
       >
@@ -74,8 +74,10 @@ const AdminLayout = ({ children }) => {
           <span className="text-xs text-slate-500 dark:text-slate-400">Admin</span>
         </header>
 
-        <main className="flex-1 px-4 py-6 sm:px-6 lg:px-8">
-          {children}
+        <main className="flex-1 w-full bg-slate-50/50 dark:bg-slate-950/50">
+          <div className="w-full px-4 py-6 sm:px-6 lg:px-8 xl:px-12 2xl:px-16 animate-fade-in">
+            {children}
+          </div>
         </main>
       </div>
     </div>

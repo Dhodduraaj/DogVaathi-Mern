@@ -2,9 +2,9 @@ import React, { useEffect, useState } from "react";
 import api from "../../utils/axios.js";
 
 const StatCard = ({ label, value }) => (
-  <div className="rounded-2xl border border-slate-800 bg-slate-900/70 p-4 text-sm">
-    <p className="text-xs text-slate-400">{label}</p>
-    <p className="mt-2 text-xl font-semibold text-slate-50">{value}</p>
+  <div className="group flex flex-col justify-between rounded-2xl border border-slate-700 bg-slate-900/70 p-5 shadow-lg backdrop-blur-sm transition-all duration-300 hover:-translate-y-1 hover:border-brand-500 hover:shadow-brand-500/20">
+    <p className="text-lg font-medium text-slate-400 transition-colors group-hover:text-slate-300">{label}</p>
+    <p className="mt-3 text-3xl font-bold tracking-tight text-slate-50 transition-colors group-hover:text-brand-400">{value}</p>
   </div>
 );
 
@@ -25,7 +25,7 @@ const AdminDashboard = () => {
     <div className="w-full space-y-6">
       <header>
         <h1 className="text-2xl font-semibold text-slate-50">Dashboard</h1>
-        <p className="text-sm text-slate-300">
+        <p className="text-lg text-slate-300">
           High-level overview of products, orders, and revenue.
         </p>
       </header>

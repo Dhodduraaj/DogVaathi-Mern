@@ -28,7 +28,7 @@ const AdminOrders = () => {
         <h1 className="text-2xl font-semibold text-slate-900 dark:text-slate-50">
           Orders
         </h1>
-        <p className="text-sm text-slate-600 dark:text-slate-300">
+        <p className="text-lg text-slate-600 dark:text-slate-300">
           Monitor and update all customer orders.
         </p>
       </header>
@@ -83,7 +83,7 @@ const AdminOrders = () => {
                 </li>
               ))}
             </ul>
-            <p className="mt-2 text-right text-sm font-semibold text-brand-500 dark:text-brand-400">
+            <p className="mt-2 text-right text-lg font-semibold text-brand-500 dark:text-brand-400">
               Total: ₹ {order.totalAmount?.toFixed(2)}
             </p>
           </div>

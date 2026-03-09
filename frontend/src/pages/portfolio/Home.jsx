@@ -4,6 +4,7 @@ import Carousel from "../../components/Carousel.jsx";
 import ProductCard from "../../components/ProductCard.jsx";
 import AchievementCard from "../../components/AchievementCard.jsx";
 import VideoCard from "../../components/VideoCard.jsx";
+import SocialMediaShowcase from "../../components/SocialMediaShowcase.jsx";
 import api from "../../utils/axios.js";
 import { getEmbedUrl } from "../../utils/videoEmbed.js";
 
@@ -32,9 +33,9 @@ const Home = () => {
   }, []);
 
   return (
-    <div className="w-full space-y-10">
+    <div className="w-full space-y-16 animate-fade-in pb-12">
       {/* Hero */}
-      <section className="grid gap-8 md:grid-cols-2 md:items-center">
+      <section className="grid gap-8 md:grid-cols-2 md:items-center pt-4">
         <div className="space-y-5">
           <p className="text-xs font-semibold uppercase tracking-[0.25em] text-brand-400 dark:text-brand-400">
             Professional Dog Trainer
@@ -42,7 +43,7 @@ const Home = () => {
           <h1 className="text-3xl font-semibold tracking-tight text-brand-600 dark:text-slate-50 md:text-4xl">
             Welcome to Dog Vaathi
           </h1>
-          <p className="text-sm text-[#333333] dark:text-slate-300">
+          <p className="text-lg text-[#333333] dark:text-slate-300">
             Balanced training, real-world results. Follow Dog Vaathi’s journey
             with working dogs, sport dogs, and family companions—now paired with
             curated supplements for happier, healthier dogs.
@@ -53,7 +54,7 @@ const Home = () => {
             </Link>
             <Link
               to="/portfolio/videos"
-              className="rounded-full border border-brand-500 px-4 py-2 text-xs font-semibold text-brand-600 hover:border-brand-600 hover:bg-brand-500/10 dark:border-slate-700 dark:text-slate-200 dark:hover:text-brand-400"
+              className="rounded-full border border-brand-500 px-4 py-2 text-lg font-semibold text-brand-600 hover:border-brand-600 hover:bg-brand-500/10 dark:border-slate-700 dark:text-slate-200 dark:hover:text-brand-400"
             >
               Watch Training Videos
             </Link>
@@ -75,7 +76,7 @@ const Home = () => {
             View all →
           </Link>
         </div>
-        <p className="max-w-2xl text-xs text-[#333333] dark:text-slate-300">
+        <p className="max-w-3xl text-lg text-[#333333] dark:text-slate-300">
           Certifications, competitions, and milestone dogs that shaped Dog
           Vaathi’s training philosophy.
         </p>
@@ -104,7 +105,7 @@ const Home = () => {
             View all →
           </Link>
         </div>
-        <p className="max-w-2xl text-xs text-[#333333] dark:text-slate-300">
+        <p className="max-w-3xl text-lg text-[#333333] dark:text-slate-300">
           Real training sessions and behind-the-scenes content from Dog Vaathi.
         </p>
         <div className="grid gap-4 sm:grid-cols-2 md:grid-cols-3">
@@ -137,15 +138,18 @@ const Home = () => {
                 allowFullScreen
               />
             </div>
-            <div className="px-4 py-3 text-sm text-slate-200">
+            <div className="px-4 py-3 text-lg text-slate-200">
               {activeVideo.title}
             </div>
           </div>
         </div>
       )}
 
+      {/* Social Media Showcase */}
+      <SocialMediaShowcase />
+
       {/* Store preview */}
-      <section className="space-y-4">
+      <section className="space-y-6">
         <div className="flex items-center justify-between">
           <h2 className="text-lg font-semibold text-brand-600 dark:text-slate-50">
             Supplement Store Preview

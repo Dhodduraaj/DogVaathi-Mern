@@ -97,10 +97,10 @@ const AdminProducts = () => {
   };
 
   return (
-    <div className="w-full space-y-6 text-sm">
+    <div className="w-full space-y-6 text-lg">
       <header>
         <h1 className="text-2xl font-semibold text-slate-50">Products</h1>
-        <p className="text-sm text-slate-300">
+        <p className="text-lg text-slate-300">
           Manage supplement catalog, pricing, and stock.
         </p>
       </header>
@@ -210,7 +210,7 @@ const AdminProducts = () => {
                   className="h-10 w-10 rounded object-cover"
                 />
               )}
-              <p className="text-sm text-brand-400">₹ {p.price.toFixed(2)}</p>
+              <p className="text-lg text-brand-400">₹ {p.price.toFixed(2)}</p>
               <button
                 onClick={() => handleEdit(p)}
                 className="rounded-full border border-slate-700 px-3 py-1 text-[11px]"

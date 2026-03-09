@@ -252,48 +252,48 @@ const Cart = () => {
   return (
     <div className="w-full space-y-6">
       <header className="space-y-2">
-        <h1 className="text-2xl font-semibold text-slate-900 dark:text-slate-50">
+        <h1 className="text-3xl font-bold tracking-tight text-dark-900 dark:text-slate-50">
           Your Cart
         </h1>
-        <p className="text-sm text-slate-600 dark:text-slate-300">
+        <p className="text-lg text-slate-600 dark:text-slate-300">
           Review your supplements and choose a payment method.
         </p>
       </header>
 
       {items.length === 0 ? (
-        <p className="text-sm text-slate-500 dark:text-slate-400">
+        <p className="text-lg text-slate-500 dark:text-slate-400">
           Your cart is empty.
         </p>
       ) : (
         <>
-          <div className="space-y-3 rounded-2xl border border-slate-200 bg-slate-50/80 p-4 dark:border-slate-800 dark:bg-slate-900/60 text-xs">
+          <div className="space-y-3 rounded-2xl border border-cream-200 bg-white p-5 shadow-sm dark:border-slate-800 dark:bg-slate-900/60 text-lg">
             {items.map((item) => (
               <div
                 key={item._id}
-                className="flex flex-wrap items-center gap-3 border-b border-slate-200 pb-3 last:border-0 last:pb-0 dark:border-slate-800"
+                className="group flex flex-wrap items-center gap-4 border-b border-cream-100 pb-4 transition-colors last:border-0 last:pb-0 hover:bg-cream-50/50 dark:border-slate-800 dark:hover:bg-slate-800/50 rounded-lg p-2 -mx-2"
               >
                 <div className="flex-1">
-                  <p className="text-sm font-semibold text-slate-900 dark:text-slate-100">
+                  <p className="text-base font-bold text-dark-900 dark:text-slate-100">
                     {item.name}
                   </p>
-                  <p className="text-[11px] text-slate-500 dark:text-slate-400">
-                    ₹ {item.price?.toFixed(2)}
+                  <p className="text-lg font-semibold text-brand-500 dark:text-brand-400">
+                    ₹ {Math.round(item.price)}
                   </p>
                 </div>
-                <div className="flex items-center gap-2">
+                <div className="flex items-center gap-3 rounded-lg border border-cream-200 bg-cream-50 px-2 py-1 shadow-inner dark:border-slate-700 dark:bg-slate-900 text-lg">
                   <button
                     type="button"
-                    className="rounded-full border border-slate-300 px-2 py-1 dark:border-slate-700"
+                    className="flex h-7 w-7 items-center justify-center rounded-md font-bold text-slate-600 transition-colors hover:bg-white hover:text-brand-600 hover:shadow-sm disabled:opacity-50 dark:text-slate-300 dark:hover:bg-slate-800"
                     onClick={() =>
                       updateQuantity(item._id, item.quantity - 1)
                     }
                   >
                     -
                   </button>
-                  <span>{item.quantity}</span>
+                  <span className="w-6 text-center font-bold text-dark-900 dark:text-slate-100">{item.quantity}</span>
                   <button
                     type="button"
-                    className="rounded-full border border-slate-300 px-2 py-1 dark:border-slate-700"
+                    className="flex h-7 w-7 items-center justify-center rounded-md font-bold text-slate-600 transition-colors hover:bg-white hover:text-brand-600 hover:shadow-sm dark:text-slate-300 dark:hover:bg-slate-800"
                     onClick={() =>
                       updateQuantity(item._id, item.quantity + 1)
                     }
@@ -303,8 +303,9 @@ const Cart = () => {
                 </div>
                 <button
                   type="button"
-                  className="text-[11px] text-red-500 dark:text-red-400"
+                  className="rounded-lg p-2 text-lg font-medium text-red-500 transition-colors hover:bg-red-50 hover:text-red-600 dark:text-red-400 dark:hover:bg-red-900/20"
                   onClick={() => removeFromCart(item._id)}
+                  aria-label="Remove item"
                 >
                   Remove
                 </button>
@@ -312,16 +313,16 @@ const Cart = () => {
             ))}
           </div>
 
-          <div className="flex items-center justify-between text-sm">
-            <p className="text-slate-600 dark:text-slate-300">Total:</p>
-            <p className="text-lg font-semibold text-brand-500 dark:text-brand-400">
-              ₹ {total.toFixed(2)}
+          <div className="flex items-center justify-between rounded-2xl bg-brand-500/10 p-5 shadow-sm dark:bg-slate-800/80">
+            <p className="text-base font-semibold text-dark-900 dark:text-slate-200">Total Amount:</p>
+            <p className="text-2xl font-bold text-brand-600 dark:text-brand-400">
+              ₹ {Math.round(total)}
             </p>
           </div>
 
           {/* Delivery address */}
-          <div className="rounded-2xl border border-cream-100 bg-white p-4 dark:border-slate-800 dark:bg-slate-900/80">
-            <h2 className="mb-3 text-sm font-semibold text-[#333333] dark:text-slate-50">
+          <div className="rounded-2xl border border-cream-200 bg-white p-5 shadow-sm dark:border-slate-800 dark:bg-slate-900/80">
+            <h2 className="mb-4 text-base font-bold text-dark-900 dark:text-slate-50">
               Delivery Address
             </h2>
             {showAddressForm ? (
@@ -340,7 +341,7 @@ const Cart = () => {
                         className="mt-1 text-brand-500"
                       />
                       <div>
-                        <span className="text-sm font-medium text-slate-700 dark:text-slate-200">
+                        <span className="text-lg font-medium text-slate-700 dark:text-slate-200">
                           Use default address
                         </span>
                         <p className="mt-1 text-xs text-slate-600 dark:text-slate-400">
@@ -523,44 +524,44 @@ const Cart = () => {
           </div>
 
           {/* Payment method selection */}
-          <div className="rounded-2xl border border-cream-100 bg-white p-4 dark:border-slate-800 dark:bg-slate-900/80">
-            <h2 className="mb-3 text-sm font-semibold text-slate-900 dark:text-slate-50">
+          <div className="rounded-2xl border border-cream-200 bg-white p-5 shadow-sm dark:border-slate-800 dark:bg-slate-900/80">
+            <h2 className="mb-4 text-base font-bold text-dark-900 dark:text-slate-50">
               Payment Method
             </h2>
-            <div className="space-y-2">
-              <label className="flex cursor-pointer items-center gap-3 rounded-lg border p-3 transition dark:border-slate-700">
+            <div className="space-y-3">
+              <label className={`flex cursor-pointer items-center gap-3 rounded-xl border p-4 transition-all duration-300 hover:shadow-md ${paymentMethod === PAYMENT_RAZORPAY ? 'border-brand-500 bg-brand-500/10 dark:bg-brand-500/10' : 'border-cream-200 hover:border-brand-400 dark:border-slate-700'}`}>
                 <input
                   type="radio"
                   name="payment"
                   checked={paymentMethod === PAYMENT_RAZORPAY}
                   onChange={() => setPaymentMethod(PAYMENT_RAZORPAY)}
-                  className="text-brand-500"
+                  className="h-4 w-4 text-brand-500 focus:ring-brand-500"
                 />
-                <span className="text-sm text-slate-700 dark:text-slate-200">
+                <span className="font-semibold text-dark-900 dark:text-slate-200">
                   Razorpay – Pay Online
                 </span>
               </label>
-              <label className="flex cursor-pointer items-center gap-3 rounded-lg border p-3 transition dark:border-slate-700">
+              <label className={`flex cursor-pointer items-center gap-3 rounded-xl border p-4 transition-all duration-300 hover:shadow-md ${paymentMethod === PAYMENT_UPI ? 'border-brand-500 bg-brand-500/10 dark:bg-brand-500/10' : 'border-cream-200 hover:border-brand-400 dark:border-slate-700'}`}>
                 <input
                   type="radio"
                   name="payment"
                   checked={paymentMethod === PAYMENT_UPI}
                   onChange={() => setPaymentMethod(PAYMENT_UPI)}
-                  className="text-brand-500"
+                  className="h-4 w-4 text-brand-500 focus:ring-brand-500"
                 />
-                <span className="text-sm text-slate-700 dark:text-slate-200">
+                <span className="font-semibold text-dark-900 dark:text-slate-200">
                   UPI – Scan QR & Pay
                 </span>
               </label>
-              <label className="flex cursor-pointer items-center gap-3 rounded-lg border p-3 transition dark:border-slate-700">
+              <label className={`flex cursor-pointer items-center gap-3 rounded-xl border p-4 transition-all duration-300 hover:shadow-md ${paymentMethod === PAYMENT_COD ? 'border-brand-500 bg-brand-500/10 dark:bg-brand-500/10' : 'border-cream-200 hover:border-brand-400 dark:border-slate-700'}`}>
                 <input
                   type="radio"
                   name="payment"
                   checked={paymentMethod === PAYMENT_COD}
                   onChange={() => setPaymentMethod(PAYMENT_COD)}
-                  className="text-brand-500"
+                  className="h-4 w-4 text-brand-500 focus:ring-brand-500"
                 />
-                <span className="text-sm text-slate-700 dark:text-slate-200">
+                <span className="font-semibold text-dark-900 dark:text-slate-200">
                   Cash on Delivery (COD)
                 </span>
               </label>
@@ -574,7 +575,7 @@ const Cart = () => {
                 <h3 className="mb-4 text-lg font-semibold text-slate-900 dark:text-slate-50">
                   Pay via UPI
                 </h3>
-                <p className="mb-2 text-sm text-slate-600 dark:text-slate-300">
+                <p className="mb-2 text-lg text-slate-600 dark:text-slate-300">
                   Scan the QR code with your UPI app. Amount to pay:
                 </p>
                 <p className="mb-4 text-2xl font-bold text-brand-500 dark:text-brand-400">
@@ -583,7 +584,7 @@ const Cart = () => {
                 {import.meta.env.VITE_UPI_ID && (
                   <a
                     href={`upi://pay?pa=${import.meta.env.VITE_UPI_ID}&pn=Dog%20Vaathi&am=${total.toFixed(2)}&cu=INR`}
-                    className="mb-4 block rounded-lg bg-brand-500 px-4 py-2 text-center text-sm font-medium text-white hover:bg-brand-600"
+                    className="mb-4 block rounded-lg bg-brand-500 px-4 py-2 text-center text-lg font-medium text-white hover:bg-brand-600"
                   >
                     Open in UPI app (₹{total.toFixed(2)} pre-filled)
                   </a>
@@ -602,7 +603,7 @@ const Cart = () => {
                   <button
                     type="button"
                     onClick={() => setShowUpiModal(false)}
-                    className="flex-1 rounded-lg border border-slate-300 px-4 py-2 text-sm dark:border-slate-700 dark:text-slate-200"
+                    className="flex-1 rounded-lg border border-slate-300 px-4 py-2 text-lg dark:border-slate-700 dark:text-slate-200"
                   >
                     Cancel
                   </button>

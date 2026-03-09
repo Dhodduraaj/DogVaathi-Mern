@@ -3,10 +3,25 @@
 @tailwind utilities;
 
 body {
-  @apply bg-cream-50 text-[#333333] antialiased dark:bg-slate-950 dark:text-slate-50;
+  @apply bg-cream-50 text-dark-900 antialiased dark:bg-slate-950 dark:text-slate-50 transition-colors duration-300;
 }
 
 .btn-primary {
-  @apply inline-flex items-center justify-center rounded-full bg-brand-500 px-5 py-2 text-sm font-semibold text-white shadow-lg shadow-brand-500/30 transition hover:bg-brand-600 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500;
+  @apply inline-flex items-center justify-center rounded-xl bg-brand-500 px-6 py-2.5 text-lg font-semibold text-white shadow-md shadow-brand-500/20 transition-all duration-300 hover:-translate-y-0.5 hover:bg-brand-600 hover:shadow-lg hover:shadow-brand-500/30 active:scale-95 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500;
+}
+
+.btn-secondary {
+  @apply inline-flex items-center justify-center rounded-xl border-2 border-brand-500 bg-transparent px-6 py-2.5 text-lg font-semibold text-brand-600 transition-all duration-300 hover:-translate-y-0.5 hover:bg-brand-500/10 hover:shadow-md active:scale-95 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500 dark:border-brand-400 dark:text-brand-400 dark:hover:bg-brand-500/10;
+}
+
+/* Custom Scrollbar for a more premium feel */
+::-webkit-scrollbar {
+  width: 8px;
+}
+::-webkit-scrollbar-track {
+  @apply bg-cream-50 dark:bg-slate-950;
+}
+::-webkit-scrollbar-thumb {
+  @apply rounded-full bg-brand-400/50 hover:bg-brand-500;
 }
 

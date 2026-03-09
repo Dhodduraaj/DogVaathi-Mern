@@ -14,6 +14,8 @@ const AdminAchievements = () => {
   const [items, setItems] = useState([]);
   const [form, setForm] = useState(emptyForm);
   const [editingId, setEditingId] = useState(null);
+  const [imageFile, setImageFile] = useState(null);
+  const [imagePreview, setImagePreview] = useState(null);
 
   const load = async () => {
     const res = await api.get("/admin/achievements");
@@ -28,21 +30,46 @@ const AdminAchievements = () => {
     setForm({ ...form, [e.target.name]: e.target.value });
   };
 
+  const handleImageChange = (e) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      if (!file.type.startsWith("image/")) {
+        toast.error("Please select an image file");
+        return;
+      }
+      setImageFile(file);
+      setImagePreview(URL.createObjectURL(file));
+    } else {
+      setImageFile(null);
+      setImagePreview(null);
+    }
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
+      const payload = new FormData();
+      payload.append("title", form.title);
+      payload.append("programName", form.programName);
+      payload.append("date", form.date);
+      payload.append("description", form.description);
+      if (form.imageUrl) payload.append("imageUrl", form.imageUrl);
+      if (imageFile) payload.append("image", imageFile);
+
       if (editingId) {
-        await api.put(`/admin/achievements/${editingId}`, form);
+        await api.put(`/admin/achievements/${editingId}`, payload);
         toast.success("Achievement updated");
         setEditingId(null);
       } else {
-        await api.post("/admin/achievements", form);
+        await api.post("/admin/achievements", payload);
         toast.success("Achievement added");
       }
       setForm(emptyForm);
+      setImageFile(null);
+      setImagePreview(null);
       load();
-    } catch {
-      toast.error("Save failed");
+    } catch (err) {
+      toast.error(err?.response?.data?.message || "Save failed");
     }
   };
 
@@ -55,6 +82,8 @@ const AdminAchievements = () => {
       imageUrl: a.imageUrl || "",
     });
     setEditingId(a._id);
+    setImageFile(null);
+    setImagePreview(a.imageUrl || null);
   };
 
   const handleDelete = async (id) => {
@@ -75,13 +104,15 @@ const AdminAchievements = () => {
   const cancelEdit = () => {
     setEditingId(null);
     setForm(emptyForm);
+    setImageFile(null);
+    setImagePreview(null);
   };
 
   return (
-    <div className="space-y-6 text-sm">
+    <div className="space-y-6 text-lg">
       <header>
         <h1 className="text-2xl font-semibold text-slate-50">Achievements</h1>
-        <p className="text-sm text-slate-300">
+        <p className="text-lg text-slate-300">
           Add portfolio achievements. Upload images to Cloudinary (or any host), then paste the image URL below.
         </p>
       </header>
@@ -116,6 +147,7 @@ const AdminAchievements = () => {
           <label className="text-xs text-slate-300">Date</label>
           <input
             name="date"
+            type="date"
             value={form.date}
             onChange={handleChange}
             required
@@ -133,15 +165,36 @@ const AdminAchievements = () => {
             className="w-full rounded-lg border border-slate-700 bg-slate-950 px-3 py-2 text-xs text-slate-100 outline-none focus:border-brand-500"
           />
         </div>
-        <div className="space-y-1">
-          <label className="text-xs text-slate-300">Image URL (optional)</label>
-          <input
-            name="imageUrl"
-            value={form.imageUrl}
-            onChange={handleChange}
-            placeholder="https://res.cloudinary.com/... or any image URL"
-            className="w-full rounded-lg border border-slate-700 bg-slate-950 px-3 py-2 text-xs text-slate-100 outline-none focus:border-brand-500"
-          />
+        <div className="grid gap-3 md:grid-cols-2">
+          <div className="space-y-1">
+            <label className="text-xs text-slate-300">Image URL (Drive link / external optional)</label>
+            <input
+              name="imageUrl"
+              value={form.imageUrl}
+              onChange={handleChange}
+              placeholder="https://drive.google.com/... or any image URL"
+              className="w-full rounded-lg border border-slate-700 bg-slate-950 px-3 py-2 text-xs text-slate-100 outline-none focus:border-brand-500"
+            />
+          </div>
+          <div className="space-y-1">
+            <label className="text-xs text-slate-300">Or Upload Image</label>
+            <input
+              key={editingId || "new"}
+              type="file"
+              accept="image/*"
+              onChange={handleImageChange}
+              className="w-full rounded-lg border border-slate-700 bg-slate-950 px-3 py-2 text-xs text-slate-100 file:mr-2 file:rounded file:border-0 file:bg-brand-500 file:px-3 file:py-1 file:text-xs file:text-white"
+            />
+            {imagePreview && (
+              <div className="mt-2">
+                <img
+                  src={imagePreview}
+                  alt="Preview"
+                  className="h-20 w-20 rounded-lg border border-slate-700 object-cover"
+                />
+              </div>
+            )}
+          </div>
         </div>
         <div className="flex gap-2">
           <button type="submit" className="btn-primary px-4 py-2 text-xs">

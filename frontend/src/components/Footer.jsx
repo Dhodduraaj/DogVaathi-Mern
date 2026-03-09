@@ -5,21 +5,22 @@ const Footer = () => {
   return (
     <footer className="border-t border-cream-100 bg-cream-100 dark:border-slate-800 dark:bg-slate-950">
       <div className="flex w-full flex-col gap-6 px-4 py-8 sm:px-6 lg:px-8 md:flex-row md:items-start md:justify-between">
-        <div className="space-y-2">
-          <p className="text-sm font-semibold text-brand-600 dark:text-brand-400">
-            Dog Vaathi
-          </p>
-          <p className="text-xs text-[#333333] dark:text-slate-500">
-            Professional dog training & curated supplements for happier, healthier dogs.
-          </p>
-        </div>
 
-        <div className="flex flex-col gap-4 sm:flex-row sm:gap-8">
+
+        <div className="grid gap-4 sm:grid-cols-3 sm:gap-8">
+          <div className="space-y-2">
+            <p className="text-xl font-semibold text-brand-600 dark:text-brand-400">
+              Dog Vaathi
+            </p>
+            <p className="text-lg text-[#333333] dark:text-slate-500">
+              Professional dog training & curated supplements for happier, healthier dogs.
+            </p>
+          </div>
           <div>
-            <p className="mb-2 text-xs font-semibold text-[#333333] dark:text-slate-400">
+            <p className="mb-2 text-lg font-semibold text-[#333333] dark:text-slate-400">
               Quick Links
             </p>
-            <ul className="space-y-1 text-xs text-[#333333] dark:text-slate-500">
+            <ul className="space-y-1 text-lg text-[#333333] dark:text-slate-500">
               <li>
                 <Link to="/" className="hover:text-brand-500 dark:hover:text-brand-400">
                   Home
@@ -49,10 +50,10 @@ const Footer = () => {
           </div>
 
           <div>
-            <p className="mb-2 text-xs font-semibold text-[#333333] dark:text-slate-400">
+            <p className="mb-2 text-lg font-semibold text-[#333333] dark:text-slate-400">
               Contact
             </p>
-            <ul className="space-y-1 text-xs text-[#333333] dark:text-slate-500">
+            <ul className="space-y-1 text-lg text-[#333333] dark:text-slate-500">
               <li>
                 <a href="mailto:contact@dogvaathi.com" className="hover:text-brand-500 dark:hover:text-brand-400">
                   contact@dogvaathi.com

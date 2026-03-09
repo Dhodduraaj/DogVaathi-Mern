@@ -5,9 +5,9 @@ import Chatbot from "../components/Chatbot.jsx";
 
 const CustomerLayout = ({ children }) => {
   return (
-    <div className="flex min-h-screen flex-col bg-gradient-to-b from-cream-50 via-cream-50 to-cream-100 dark:from-slate-950 dark:via-slate-950 dark:to-slate-900">
+    <div className="flex min-h-screen flex-col bg-cream-50 dark:bg-slate-950 transition-colors duration-300">
       <Navbar />
-      <main className="flex w-full flex-1 flex-col px-4 py-6 sm:px-6 lg:px-8">
+      <main className="flex w-full flex-1 flex-col px-4 py-8 sm:px-6 lg:px-8 xl:px-12 2xl:px-16 animate-fade-in">
         {children}
       </main>
       <Footer />

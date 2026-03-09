@@ -1,5 +1,6 @@
 import express from "express";
 import { body } from "express-validator";
+import multer from "multer";
 import {
   getDashboardStats,
   createAchievement,
@@ -12,8 +13,9 @@ import {
   deleteVideo,
 } from "../controllers/adminController.js";
 import { protect, adminOnly } from "../middleware/authMiddleware.js";
-
 const router = express.Router();
+
+const upload = multer({ storage: multer.memoryStorage(), limits: { fileSize: 5 * 1024 * 1024 } });
 
 // Dashboard stats
 router.get("/dashboard", protect, adminOnly, getDashboardStats);
@@ -23,6 +25,7 @@ router.post(
   "/achievements",
   protect,
   adminOnly,
+  upload.single("image"),
   [
     body("title").notEmpty(),
     body("programName").notEmpty(),
@@ -38,6 +41,7 @@ router.put(
   "/achievements/:id",
   protect,
   adminOnly,
+  upload.single("image"),
   [
     body("title").notEmpty(),
     body("programName").notEmpty(),
@@ -53,6 +57,7 @@ router.post(
   "/videos",
   protect,
   adminOnly,
+  upload.single("image"),
   [body("title").notEmpty(), body("url").notEmpty()],
   createVideo
 );
@@ -63,6 +68,7 @@ router.put(
   "/videos/:id",
   protect,
   adminOnly,
+  upload.single("image"),
   [body("title").notEmpty(), body("url").notEmpty()],
   updateVideo
 );

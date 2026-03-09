@@ -4,6 +4,7 @@ import { useAuth } from "../context/AuthContext.jsx";
 import { useCart } from "../context/CartContext.jsx";
 import { useTheme } from "../context/ThemeContext.jsx";
 
+
 const Navbar = () => {
   const { user, logout } = useAuth();
   const { items } = useCart();
@@ -12,18 +13,15 @@ const Navbar = () => {
   const cartCount = items.reduce((sum, i) => sum + i.quantity, 0);
 
   const navLinkClass = ({ isActive }) =>
-    `text-sm font-medium transition hover:text-brand-500 ${
-      isActive ? "text-brand-500" : "text-[#333333] dark:text-slate-200"
+    `relative text-lg font-semibold transition-all duration-300 hover:text-brand-500 after:absolute after:bottom-[-4px] after:left-0 after:h-[2px] after:w-0 after:bg-brand-500 after:transition-all after:duration-300 hover:after:w-full ${isActive ? "text-brand-500 after:w-full" : "text-dark-900 dark:text-slate-200"
     }`;
 
   return (
     <header className="sticky top-0 z-50 border-b border-cream-100 bg-cream-50/95 backdrop-blur dark:border-slate-800 dark:bg-slate-950/95">
       <div className="flex w-full items-center justify-between px-4 py-3 sm:px-6 lg:px-8">
-        <Link to="/" className="flex items-center gap-2 text-brand-600 dark:text-slate-100">
-          <span className="rounded-full bg-brand-500 px-2 py-1 text-xs font-semibold text-white">
-            DV
-          </span>
-          <span className="text-lg font-semibold tracking-tight">
+        <Link to="/" className="group flex items-center gap-2 text-brand-600 transition-all duration-300 hover:scale-105 dark:text-slate-100">
+          <img src="/images/logo.png" alt="Dog Vaathi" className="h-10 w-10 sm:h-12 sm:w-12 rounded-xl object-cover shadow-sm transition-all duration-300 group-hover:shadow-brand-500/30 bg-transparent" />
+          <span className="text-lg font-bold tracking-tight text-dark-900 dark:text-slate-50">
             Dog Vaathi
           </span>
         </Link>
@@ -52,7 +50,7 @@ const Navbar = () => {
           <button
             type="button"
             onClick={toggleTheme}
-            className="rounded-lg p-2 text-[#333333] hover:bg-cream-100 hover:text-brand-600 dark:text-slate-400 dark:hover:bg-slate-800 dark:hover:text-slate-200"
+            className="rounded-xl p-2.5 text-dark-900 transition-all duration-300 hover:-translate-y-0.5 hover:bg-cream-100 hover:text-brand-600 hover:shadow-sm dark:text-slate-400 dark:hover:bg-slate-800 dark:hover:text-amber-400"
             aria-label={theme === "dark" ? "Switch to light mode" : "Switch to dark mode"}
           >
             {theme === "dark" ? (
@@ -65,6 +63,7 @@ const Navbar = () => {
               </svg>
             )}
           </button>
+
           {user && (
             <NavLink to="/store/orders" className={({ isActive }) => `flex items-center gap-1 ${navLinkClass({ isActive })}`} title="My Orders">
               <svg className="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -73,7 +72,7 @@ const Navbar = () => {
               <span className="hidden sm:inline"></span>
             </NavLink>
           )}
-          <NavLink to="/store/cart" className="relative flex items-center gap-1 p-1 text-[#333333] dark:text-slate-300" title="Cart">
+          <NavLink to="/store/cart" className="relative flex items-center gap-1 rounded-xl p-2.5 text-dark-900 transition-all duration-300 hover:-translate-y-0.5 hover:bg-cream-100 hover:text-brand-600 hover:shadow-sm dark:text-slate-300 dark:hover:bg-slate-800" title="Cart">
             <svg className="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z" />
             </svg>
@@ -85,21 +84,23 @@ const Navbar = () => {
             <span className="hidden sm:inline"></span>
           </NavLink>
           {user ? (
-            <>
-              <span className="hidden text-xs text-brand-400 sm:inline dark:text-slate-400">
+            <div className="flex items-center gap-3 ml-2 border-l border-cream-200 pl-4 dark:border-slate-800">
+              <span className="hidden text-lg font-medium text-brand-600 sm:inline dark:text-brand-400">
                 Hi, {user.name.split(" ")[0]}
               </span>
               <button
                 onClick={logout}
-                className="rounded-full border border-brand-500/50 px-3 py-1 text-xs hover:border-brand-500 hover:text-brand-600 dark:border-slate-700 dark:hover:text-brand-400"
+                className="btn-secondary px-3 py-1.5 text-xs bg-transparent dark:hover:bg-slate-800"
               >
                 Logout
               </button>
-            </>
+            </div>
           ) : (
-            <NavLink to="/auth/login" className="btn-primary text-xs">
-              Login
-            </NavLink>
+            <div className="ml-2 border-l border-cream-200 pl-4 dark:border-slate-800">
+              <NavLink to="/auth/login" className="btn-primary">
+                Login
+              </NavLink>
+            </div>
           )}
         </div>
       </div>

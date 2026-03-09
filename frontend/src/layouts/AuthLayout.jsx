@@ -26,7 +26,7 @@ const AuthLayout = ({ children }) => {
         </Link>
         <Link
           to="/"
-          className="text-sm text-slate-500 transition hover:text-slate-900 dark:text-slate-400 dark:hover:text-slate-100"
+          className="text-lg text-slate-500 transition hover:text-slate-900 dark:text-slate-400 dark:hover:text-slate-100"
         >
           Back to home
         </Link>

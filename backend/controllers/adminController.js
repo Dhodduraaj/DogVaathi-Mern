@@ -3,6 +3,7 @@ import Order from "../models/Order.js";
 import Achievement from "../models/Achievement.js";
 import Video from "../models/Video.js";
 import { validationResult } from "express-validator";
+import cloudinary from "../config/cloudinary.js";
 
 // Basic dashboard statistics for admin panel
 export const getDashboardStats = async (req, res) => {
@@ -43,7 +44,23 @@ export const createAchievement = async (req, res) => {
     return res.status(400).json({ errors: errors.array() });
   }
   try {
-    const { title, programName, date, description, imageUrl } = req.body;
+    const { title, programName, date, description } = req.body;
+    let imageUrl = req.body.imageUrl || "";
+
+    if (req.file && req.file.buffer) {
+      try {
+        const b64 = req.file.buffer.toString("base64");
+        const dataUri = `data:${req.file.mimetype || "image/jpeg"};base64,${b64}`;
+        const uploadResult = await cloudinary.uploader.upload(dataUri, {
+          folder: "dogvaathi/achievements",
+        });
+        imageUrl = uploadResult.secure_url;
+      } catch (uploadErr) {
+        console.error("Cloudinary upload error:", uploadErr?.message || uploadErr);
+        throw new Error(uploadErr?.message || "Image upload failed. Check Cloudinary config.");
+      }
+    }
+
     const achievement = await Achievement.create({
       title,
       programName,
@@ -74,10 +91,32 @@ export const updateAchievement = async (req, res) => {
     return res.status(400).json({ errors: errors.array() });
   }
   try {
-    const { title, programName, date, description, imageUrl } = req.body;
+    const { title, programName, date, description } = req.body;
+    let imageUrl = req.body.imageUrl || undefined;
+
+    if (req.file && req.file.buffer) {
+      try {
+        const b64 = req.file.buffer.toString("base64");
+        const dataUri = `data:${req.file.mimetype || "image/jpeg"};base64,${b64}`;
+        const uploadResult = await cloudinary.uploader.upload(dataUri, {
+          folder: "dogvaathi/achievements",
+        });
+        imageUrl = uploadResult.secure_url;
+      } catch (uploadErr) {
+        console.error("Cloudinary upload error:", uploadErr?.message || uploadErr);
+        throw new Error(uploadErr?.message || "Image upload failed. Check Cloudinary config.");
+      }
+    }
+
     const achievement = await Achievement.findByIdAndUpdate(
       req.params.id,
-      { title, programName, date, description, imageUrl },
+      {
+        title,
+        programName,
+        date,
+        description,
+        ...(imageUrl !== undefined && { imageUrl }),
+      },
       { new: true }
     );
     if (!achievement) return res.status(404).json({ message: "Achievement not found" });
@@ -106,7 +145,23 @@ export const createVideo = async (req, res) => {
     return res.status(400).json({ errors: errors.array() });
   }
   try {
-    const { title, platform, url, thumbnailUrl, isFeatured } = req.body;
+    const { title, platform, url, isFeatured } = req.body;
+    let thumbnailUrl = req.body.thumbnailUrl || "";
+
+    if (req.file && req.file.buffer) {
+      try {
+        const b64 = req.file.buffer.toString("base64");
+        const dataUri = `data:${req.file.mimetype || "image/jpeg"};base64,${b64}`;
+        const uploadResult = await cloudinary.uploader.upload(dataUri, {
+          folder: "dogvaathi/videos",
+        });
+        thumbnailUrl = uploadResult.secure_url;
+      } catch (uploadErr) {
+        console.error("Cloudinary upload error:", uploadErr?.message || uploadErr);
+        throw new Error(uploadErr?.message || "Image upload failed. Check Cloudinary config.");
+      }
+    }
+
     const video = await Video.create({
       title,
       platform,
@@ -137,10 +192,32 @@ export const updateVideo = async (req, res) => {
     return res.status(400).json({ errors: errors.array() });
   }
   try {
-    const { title, platform, url, thumbnailUrl, isFeatured } = req.body;
+    const { title, platform, url, isFeatured } = req.body;
+    let thumbnailUrl = req.body.thumbnailUrl || undefined;
+
+    if (req.file && req.file.buffer) {
+      try {
+        const b64 = req.file.buffer.toString("base64");
+        const dataUri = `data:${req.file.mimetype || "image/jpeg"};base64,${b64}`;
+        const uploadResult = await cloudinary.uploader.upload(dataUri, {
+          folder: "dogvaathi/videos",
+        });
+        thumbnailUrl = uploadResult.secure_url;
+      } catch (uploadErr) {
+        console.error("Cloudinary upload error:", uploadErr?.message || uploadErr);
+        throw new Error(uploadErr?.message || "Image upload failed. Check Cloudinary config.");
+      }
+    }
+
     const video = await Video.findByIdAndUpdate(
       req.params.id,
-      { title, platform, url, thumbnailUrl, isFeatured },
+      {
+        title,
+        platform,
+        url,
+        isFeatured,
+        ...(thumbnailUrl !== undefined && { thumbnailUrl }),
+      },
       { new: true }
     );
     if (!video) return res.status(404).json({ message: "Video not found" });
