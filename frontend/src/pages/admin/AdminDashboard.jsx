@@ -22,21 +22,29 @@ const AdminDashboard = () => {
   if (!stats) return null;
 
   return (
-    <div className="w-full space-y-6">
-      <header>
+    <div className="w-full space-y-6 animate-fade-in">
+      <header className="animate-slide-up">
         <h1 className="text-2xl font-semibold text-slate-50">Dashboard</h1>
         <p className="text-lg text-slate-300">
           High-level overview of products, orders, and revenue.
         </p>
       </header>
       <div className="grid gap-4 md:grid-cols-4">
-        <StatCard label="Total products" value={stats.totalProducts} />
-        <StatCard label="Total orders" value={stats.totalOrders} />
-        <StatCard label="Pending orders" value={stats.pendingOrders} />
-        <StatCard
-          label="Total revenue (₹)"
-          value={stats.totalRevenue.toFixed(2)}
-        />
+        <div className="animate-slide-up stagger-1">
+          <StatCard label="Total products" value={stats.totalProducts} />
+        </div>
+        <div className="animate-slide-up stagger-2">
+          <StatCard label="Total orders" value={stats.totalOrders} />
+        </div>
+        <div className="animate-slide-up stagger-3">
+          <StatCard label="Pending orders" value={stats.pendingOrders} />
+        </div>
+        <div className="animate-slide-up stagger-4">
+          <StatCard
+            label="Total revenue (₹)"
+            value={stats.totalRevenue.toFixed(2)}
+          />
+        </div>
       </div>
     </div>
   );

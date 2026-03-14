@@ -19,9 +19,9 @@ const Navbar = () => {
   return (
     <header className="sticky top-0 z-50 border-b border-cream-100 bg-cream-50/95 backdrop-blur dark:border-slate-800 dark:bg-slate-950/95">
       <div className="flex w-full items-center justify-between px-4 py-3 sm:px-6 lg:px-8">
-        <Link to="/" className="group flex items-center gap-2 text-brand-600 transition-all duration-300 hover:scale-105 dark:text-slate-100">
-          <img src="/images/logo.png" alt="Dog Vaathi" className="h-10 w-10 sm:h-12 sm:w-12 rounded-xl object-cover shadow-sm transition-all duration-300 group-hover:shadow-brand-500/30 bg-transparent" />
-          <span className="text-lg font-bold tracking-tight text-dark-900 dark:text-slate-50">
+        <Link to="/" className="group flex items-center gap-2 text-brand-600 transition-all duration-500 hover:scale-105 active:scale-95 dark:text-slate-100">
+          <img src="/images/logo.png" alt="Dog Vaathi" className="h-10 w-10 sm:h-12 sm:w-12 rounded-xl object-cover shadow-sm transition-all duration-500 group-hover:rotate-6 group-hover:shadow-brand-500/30 bg-transparent" />
+          <span className="text-lg font-bold tracking-tight text-dark-900 transition-colors duration-500 group-hover:text-brand-600 dark:text-slate-50 dark:group-hover:text-brand-400">
             Dog Vaathi
           </span>
         </Link>

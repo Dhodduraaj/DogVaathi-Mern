@@ -23,8 +23,8 @@ const AdminOrders = () => {
   };
 
   return (
-    <div className="w-full space-y-6 text-xs">
-      <header>
+    <div className="w-full space-y-6 text-xs animate-fade-in">
+      <header className="animate-slide-up">
         <h1 className="text-2xl font-semibold text-slate-900 dark:text-slate-50">
           Orders
         </h1>
@@ -33,11 +33,13 @@ const AdminOrders = () => {
         </p>
       </header>
       <div className="space-y-3">
-        {orders.map((order) => (
+        {orders.map((order, index) => (
           <div
             key={order._id}
-            className="rounded-2xl border border-slate-200 bg-white p-4 dark:border-slate-800 dark:bg-slate-900/60"
+            className={`rounded-2xl border border-slate-200 bg-white p-4 dark:border-slate-800 dark:bg-slate-900/60 animate-slide-up`}
+            style={{ animationDelay: `${index * 50}ms` }}
           >
+
             <div className="flex flex-wrap items-center justify-between gap-2">
               <div>
                 <p className="font-semibold text-slate-900 dark:text-slate-100">
