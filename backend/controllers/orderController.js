@@ -137,9 +137,7 @@ export const updateOrderStatus = async (req, res) => {
     if (order.user?.email) {
       sendOrderStatusEmail({
         to: order.user.email,
-        orderId: order._id.toString(),
-        status,
-        userName: order.user.name,
+        order,
       }).catch(err => console.error("Order status email failed:", err));
     }
     res.json(order);

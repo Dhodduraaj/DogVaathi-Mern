@@ -19,12 +19,24 @@ This guide explains how to deploy the **Frontend to Vercel** and the **Backend t
    - `CLOUDINARY_CLOUD_NAME`, `CLOUDINARY_API_KEY`, `CLOUDINARY_API_SECRET`: From Cloudinary.
    - `RAZORPAY_KEY_ID`, `RAZORPAY_KEY_SECRET`: From Razorpay.
    - `SMTP_HOST`, `SMTP_PORT`, `SMTP_USER`, `SMTP_PASS`, `SMTP_FROM`: For emails.
+   - `RESEND_API_KEY`: Your API key from Resend.com.
    - `FRONTEND_URL`: Your Vercel URL (e.g., `https://dogvaathi.vercel.app`).
    - `PORT`: `5000` (Render detects this automatically, but good to have).
 
 ---
 
-## 🎨 Part 2: Frontend (Vercel)
+## 📧 Part 3: Email Service (Resend)
+
+By default, Resend only allows sending emails to the **account owner's email** (e.g., `dhodduraajsp@gmail.com`). To send emails to any customer, you must verify your domain:
+
+1. **Add Domain**: Go to [Resend.com/domains](https://resend.com/domains) and add your domain (e.g., `dogvaathi.com`).
+2. **DNS Records**: Add the provided MX and SPF records to your domain's DNS settings (GoDaddy, Namecheap, etc.).
+3. **Verify**: Click "Verify" in Resend.
+4. **Update From Address**: Once verified, change the `from` address in `backend/utils/emailService.js` from `onboarding@resend.dev` to an email using your domain (e.g., `orders@yourdomain.com`).
+
+---
+
+## 🎨 Part 4: Frontend (Vercel)
 
 1. **Dashboard**: Go to [Vercel.com](https://vercel.com) and create a new **Project**.
 2. **Repository**: Connect your GitHub repository.
