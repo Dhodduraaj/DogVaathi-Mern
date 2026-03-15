@@ -47,6 +47,9 @@ const AdminLayout = ({ children }) => {
           <Link to="/admin/coupons" className="hover:text-brand-400" onClick={() => setSidebarOpen(false)}>
             Coupons
           </Link>
+          <Link to="/admin/carousel" className="hover:text-brand-400" onClick={() => setSidebarOpen(false)}>
+            Carousel
+          </Link>
         </nav>
         <p className="mt-auto text-[11px] text-slate-500 dark:text-slate-500">
           Logged in as {user?.email}

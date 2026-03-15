@@ -18,6 +18,7 @@ import cartRoutes from "./routes/cartRoutes.js";
 import chatbotRoutes from "./routes/chatbotRoutes.js";
 import arModelRoutes from "./routes/arModelRoutes.js";
 import couponRoutes from "./routes/couponRoutes.js";
+import carouselRoutes from "./routes/carouselRoutes.js";
 
 const app = express();
 
@@ -54,6 +55,7 @@ app.use("/api/cart", cartRoutes);
 app.use("/api/chatbot", chatbotRoutes);
 app.use("/api/ar-models", arModelRoutes);
 app.use("/api/coupons", couponRoutes);
+app.use("/api/carousel", carouselRoutes);
 
 // Health check
 app.get("/api/health", (req, res) => {

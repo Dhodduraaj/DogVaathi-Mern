@@ -1,29 +1,28 @@
 import React, { useEffect, useState } from "react";
-import rdr from "../images/rdr.png";
-import fightclub from "../images/fightclub.png";
-import daredevil from "../images/daredevil.png";
 
 const defaultSlides = [
-  "rdr.png",
-  "fightclub.png",
-  "daredevil.png",
+  { image: { url: "https://images.unsplash.com/photo-1548199973-03cce0bbc87b?q=80&w=2069&auto=format&fit=crop" } },
+  { image: { url: "https://images.unsplash.com/photo-1534361960057-19889db9621e?q=80&w=2070&auto=format&fit=crop" } },
+  { image: { url: "https://images.unsplash.com/photo-1530281700549-e82e7bf110d6?q=80&w=1887&auto=format&fit=crop" } },
 ];
 
-const Carousel = ({ slides = defaultSlides, interval = 5000 }) => {
+const Carousel = ({ slides = [], interval = 5000 }) => {
+  const displaySlides = slides.length > 0 ? slides : defaultSlides;
   const [index, setIndex] = useState(0);
 
   useEffect(() => {
+    if (displaySlides.length === 0) return;
     const id = setInterval(
-      () => setIndex((prev) => (prev + 1) % slides.length),
+      () => setIndex((prev) => (prev + 1) % displaySlides.length),
       interval
     );
     return () => clearInterval(id);
-  }, [slides.length, interval]);
+  }, [displaySlides.length, interval]);
 
   const go = (dir) => {
     setIndex((prev) => {
-      if (dir === "next") return (prev + 1) % slides.length;
-      return (prev - 1 + slides.length) % slides.length;
+      if (dir === "next") return (prev + 1) % displaySlides.length;
+      return (prev - 1 + displaySlides.length) % displaySlides.length;
     });
   };
 
@@ -33,15 +32,18 @@ const Carousel = ({ slides = defaultSlides, interval = 5000 }) => {
         className="flex transition-transform duration-700 ease-in-out"
         style={{ transform: `translateX(-${index * 100}%)` }}
       >
-        {slides.map((src, i) => (
+        {displaySlides.map((s, i) => (
           <div key={i} className="min-w-full relative aspect-video md:aspect-[16/9]">
             <img
-              src={`../src/images/${src}`}
-              alt={`Slide ${i + 1}`}
+              src={s.image.url}
+              alt={s.title || `Slide ${i + 1}`}
               className="h-full w-full object-cover"
             />
-            {/* Optional gradient overlay for better text readability if text is added later */}
-            <div className="absolute inset-0 bg-gradient-to-t from-dark-900/40 to-transparent"></div>
+            {/* Gradient overlay for better text readability */}
+            <div className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-black/70 to-transparent p-6 pt-12">
+              {s.title && <h3 className="text-xl font-bold text-white mb-1">{s.title}</h3>}
+              {s.subtitle && <p className="text-sm text-slate-200">{s.subtitle}</p>}
+            </div>
           </div>
         ))}
       </div>
@@ -64,7 +66,7 @@ const Carousel = ({ slides = defaultSlides, interval = 5000 }) => {
 
       {/* Navigation Dots */}
       <div className="absolute bottom-4 left-1/2 flex -translate-x-1/2 gap-2">
-        {slides.map((_, i) => (
+        {displaySlides.map((_, i) => (
           <button
             key={i}
             onClick={() => setIndex(i)}

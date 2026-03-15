@@ -18,6 +18,7 @@ import AdminAchievements from "./pages/admin/AdminAchievements.jsx";
 import AdminVideos from "./pages/admin/AdminVideos.jsx";
 import AdminARModels from "./pages/admin/AdminARModels.jsx";
 import AdminCoupons from "./pages/admin/AdminCoupons.jsx";
+import AdminCarousel from "./pages/admin/AdminCarousel.jsx";
 import ARExperience from "./pages/ARExperience.jsx";
 import { useAuth } from "./context/AuthContext.jsx";
 
@@ -185,6 +186,16 @@ const App = () => {
           <AdminRoute>
             <AdminLayout>
               <AdminCoupons />
+            </AdminLayout>
+          </AdminRoute>
+        }
+      />
+      <Route
+        path="/admin/carousel"
+        element={
+          <AdminRoute>
+            <AdminLayout>
+              <AdminCarousel />
             </AdminLayout>
           </AdminRoute>
         }

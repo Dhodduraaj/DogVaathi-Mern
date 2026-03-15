@@ -13,18 +13,21 @@ const Home = () => {
   const [achievements, setAchievements] = useState([]);
   const [videos, setVideos] = useState([]);
   const [activeVideo, setActiveVideo] = useState(null);
+  const [carouselSlides, setCarouselSlides] = useState([]);
 
   useEffect(() => {
     const load = async () => {
       try {
-        const [productsRes, achievementsRes, videosRes] = await Promise.all([
+        const [productsRes, achievementsRes, videosRes, carouselRes] = await Promise.all([
           api.get("/products", { params: { sort: "newest", limit: 4 } }),
           api.get("/admin/achievements"),
           api.get("/admin/videos"),
+          api.get("/carousel"),
         ]);
         setFeaturedProducts(productsRes.data.slice(0, 4));
         setAchievements(achievementsRes.data.slice(0, 3));
         setVideos(videosRes.data.slice(0, 3));
+        setCarouselSlides(carouselRes.data);
       } catch (e) {
         // ignore for landing
       }
@@ -60,7 +63,7 @@ const Home = () => {
             </Link>
           </div>
         </div>
-        <Carousel />
+        <Carousel slides={carouselSlides} />
       </section>
 
       {/* Achievements teaser */}
