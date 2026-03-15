@@ -21,9 +21,12 @@ function getTransporter() {
   transporter = nodemailer.createTransport({
     host,
     port: port ? parseInt(port, 10) : 587,
-    secure: port === "465",
+    secure: false,
     auth: { user, pass },
     family: 4, // Force IPv4 to avoid ENETUNREACH issues with IPv6
+    tls: {
+      rejectUnauthorized: false,
+    },
   });
   return transporter;
 }
