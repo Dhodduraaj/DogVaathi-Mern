@@ -42,6 +42,8 @@ const orderSchema = new mongoose.Schema(
       postalCode: String,
       country: { type: String, default: "India" },
     },
+    coupon: { type: String },
+    discountAmount: { type: Number, default: 0 },
   },
   { timestamps: true }
 );

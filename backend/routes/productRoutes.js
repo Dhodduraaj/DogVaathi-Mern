@@ -25,7 +25,7 @@ router.post(
   "/",
   protect,
   adminOnly,
-  upload.single("image"),
+  upload.fields([{ name: "image", maxCount: 1 }, { name: "arModelFile", maxCount: 1 }]),
   [
     body("name").notEmpty().withMessage("Name is required"),
     body("description").notEmpty().withMessage("Description is required"),
@@ -39,7 +39,7 @@ router.put(
   "/:id",
   protect,
   adminOnly,
-  upload.single("image"),
+  upload.fields([{ name: "image", maxCount: 1 }, { name: "arModelFile", maxCount: 1 }]),
   [
     body("name").optional().notEmpty(),
     body("description").optional().notEmpty(),

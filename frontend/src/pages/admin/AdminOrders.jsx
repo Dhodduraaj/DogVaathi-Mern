@@ -85,6 +85,12 @@ const AdminOrders = () => {
                 </li>
               ))}
             </ul>
+            {order.coupon && (
+              <div className="mt-2 flex items-center justify-between text-[11px] font-medium text-brand-600 dark:text-brand-400">
+                <span>Coupon: <span className="font-black">{order.coupon}</span></span>
+                <span>- ₹ {order.discountAmount?.toFixed(2)}</span>
+              </div>
+            )}
             <p className="mt-2 text-right text-lg font-semibold text-brand-500 dark:text-brand-400">
               Total: ₹ {order.totalAmount?.toFixed(2)}
             </p>

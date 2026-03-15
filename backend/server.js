@@ -16,6 +16,8 @@ import adminRoutes from "./routes/adminRoutes.js";
 import paymentRoutes from "./routes/paymentRoutes.js";
 import cartRoutes from "./routes/cartRoutes.js";
 import chatbotRoutes from "./routes/chatbotRoutes.js";
+import arModelRoutes from "./routes/arModelRoutes.js";
+import couponRoutes from "./routes/couponRoutes.js";
 
 const app = express();
 
@@ -50,6 +52,8 @@ app.use("/api/admin", adminRoutes);
 app.use("/api/payments", paymentRoutes);
 app.use("/api/cart", cartRoutes);
 app.use("/api/chatbot", chatbotRoutes);
+app.use("/api/ar-models", arModelRoutes);
+app.use("/api/coupons", couponRoutes);
 
 // Health check
 app.get("/api/health", (req, res) => {

@@ -16,6 +16,7 @@ const AdminProducts = () => {
   const [editingId, setEditingId] = useState(null);
   const [imageFile, setImageFile] = useState(null);
   const [imagePreview, setImagePreview] = useState(null);
+  const [arModelFile, setArModelFile] = useState(null);
 
   const load = async () => {
     const res = await api.get("/products");
@@ -57,6 +58,9 @@ const AdminProducts = () => {
       if (imageFile) {
         payload.append("image", imageFile);
       }
+      if (arModelFile) {
+        payload.append("arModelFile", arModelFile);
+      }
 
       if (editingId) {
         await api.put(`/products/${editingId}`, payload);
@@ -69,6 +73,7 @@ const AdminProducts = () => {
       setEditingId(null);
       setImageFile(null);
       setImagePreview(null);
+      setArModelFile(null);
       load();
     } catch (err) {
       const msg = err?.response?.data?.message || "Save failed";
@@ -86,6 +91,7 @@ const AdminProducts = () => {
       stock: p.stock,
     });
     setImageFile(null);
+    setArModelFile(null);
     setImagePreview(p.imageUrl || null);
   };
 
@@ -183,6 +189,23 @@ const AdminProducts = () => {
               required
               className="w-full rounded-lg border border-slate-700 bg-slate-950 px-3 py-2 text-xs text-slate-100 outline-none focus:border-brand-500"
             />
+          </div>
+        </div>
+        <div className="space-y-3 rounded-xl border border-dashed border-brand-500/30 bg-brand-500/5 p-4">
+          <h3 className="text-sm font-bold text-brand-500">3D Model for AR View</h3>
+          <div className="space-y-1">
+            <label className="text-xs text-slate-300">Upload Model (.glb only)</label>
+            <input
+              key={editingId || "new-ar"}
+              type="file"
+              accept=".glb"
+              onChange={(e) => setArModelFile(e.target.files?.[0])}
+              className="w-full rounded-lg border border-slate-700 bg-slate-950 px-3 py-2 text-xs text-slate-100 file:mr-2 file:rounded file:border-0 file:bg-brand-500 file:px-3 file:py-1 file:text-xs file:text-white"
+            />
+            {editingId && products.find(p => p._id === editingId)?.arModel?.url && (
+              <p className="text-[10px] text-green-400 mt-1">Current model: Linked</p>
+            )}
+            <p className="text-[10px] text-slate-500 italic">This will upload to Cloudinary as a raw resource.</p>
           </div>
         </div>
         <button type="submit" className="btn-primary px-4 py-2 text-xs">

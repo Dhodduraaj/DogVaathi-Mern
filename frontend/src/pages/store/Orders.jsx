@@ -88,6 +88,21 @@ const Orders = () => {
           Track your supplement orders and delivery status.
         </p>
       </header>
+
+      {/* Promotional Ticker */}
+      <div className="overflow-hidden rounded-xl bg-brand-500 py-3 text-white shadow-lg">
+        <div className="flex animate-marquee whitespace-nowrap">
+          <span className="mx-4 text-xs font-black uppercase tracking-widest">
+            🎉 Use Coupon code <span className="bg-white px-2 py-0.5 text-brand-600 rounded">SAVE10</span> for 10% OFF on your next order! 🎉
+          </span>
+          <span className="mx-4 text-xs font-black uppercase tracking-widest">
+            🎉 Use Coupon code <span className="bg-white px-2 py-0.5 text-brand-600 rounded">SAVE10</span> for 10% OFF on your next order! 🎉
+          </span>
+          <span className="mx-4 text-xs font-black uppercase tracking-widest">
+            🎉 Use Coupon code <span className="bg-white px-2 py-0.5 text-brand-600 rounded">SAVE10</span> for 10% OFF on your next order! 🎉
+          </span>
+        </div>
+      </div>
       <div className="space-y-4">
         {orders.map((order) => (
           <div
@@ -141,6 +156,11 @@ const Orders = () => {
                 </ul>
               </div>
               <div className="flex flex-col justify-end text-right">
+                {order.coupon && (
+                  <div className="mb-1 text-[10px] font-bold uppercase tracking-wider text-brand-600 dark:text-brand-400">
+                    Coupon: {order.coupon} (-₹{order.discountAmount})
+                  </div>
+                )}
                 <p className="text-sm text-slate-500 dark:text-slate-400">Total Amount</p>
                 <p className="text-2xl font-black text-brand-500 dark:text-brand-400">
                   ₹ {order.totalAmount?.toFixed(0)}

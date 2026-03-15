@@ -39,7 +39,21 @@ const Products = () => {
   };
 
   return (
+
     <div className="w-full space-y-6">
+      <div className="overflow-hidden rounded-xl bg-brand-500 py-3 text-white shadow-lg">
+        <div className="flex animate-marquee whitespace-nowrap">
+          <span className="mx-4 text-xs font-black uppercase tracking-widest">
+            🎉 Use Coupon code <span className="bg-white px-2 py-0.5 text-brand-600 rounded">SAVE10</span> for 10% OFF on your next order! 🎉
+          </span>
+          <span className="mx-4 text-xs font-black uppercase tracking-widest">
+            🎉 Use Coupon code <span className="bg-white px-2 py-0.5 text-brand-600 rounded">SAVE10</span> for 10% OFF on your next order! 🎉
+          </span>
+          <span className="mx-4 text-xs font-black uppercase tracking-widest">
+            🎉 Use Coupon code <span className="bg-white px-2 py-0.5 text-brand-600 rounded">SAVE10</span> for 10% OFF on your next order! 🎉
+          </span>
+        </div>
+      </div>
       <header className="text-center">
         <h1 className="text-2xl font-bold text-brand-500 dark:text-brand-400">
           Our Products

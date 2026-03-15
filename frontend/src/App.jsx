@@ -16,6 +16,9 @@ import AdminProducts from "./pages/admin/AdminProducts.jsx";
 import AdminOrders from "./pages/admin/AdminOrders.jsx";
 import AdminAchievements from "./pages/admin/AdminAchievements.jsx";
 import AdminVideos from "./pages/admin/AdminVideos.jsx";
+import AdminARModels from "./pages/admin/AdminARModels.jsx";
+import AdminCoupons from "./pages/admin/AdminCoupons.jsx";
+import ARExperience from "./pages/ARExperience.jsx";
 import { useAuth } from "./context/AuthContext.jsx";
 
 const PrivateRoute = ({ children }) => {
@@ -59,6 +62,14 @@ const App = () => {
         element={
           <CustomerLayout>
             <Videos />
+          </CustomerLayout>
+        }
+      />
+      <Route
+        path="/ar-experience"
+        element={
+          <CustomerLayout>
+            <ARExperience />
           </CustomerLayout>
         }
       />
@@ -154,6 +165,26 @@ const App = () => {
           <AdminRoute>
             <AdminLayout>
               <AdminVideos />
+            </AdminLayout>
+          </AdminRoute>
+        }
+      />
+      <Route
+        path="/admin/ar-models"
+        element={
+          <AdminRoute>
+            <AdminLayout>
+              <AdminARModels />
+            </AdminLayout>
+          </AdminRoute>
+        }
+      />
+      <Route
+        path="/admin/coupons"
+        element={
+          <AdminRoute>
+            <AdminLayout>
+              <AdminCoupons />
             </AdminLayout>
           </AdminRoute>
         }

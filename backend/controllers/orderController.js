@@ -2,6 +2,7 @@ import { validationResult } from "express-validator";
 import Order from "../models/Order.js";
 import Product from "../models/Product.js";
 import User from "../models/User.js";
+import Coupon from "../models/Coupon.js";
 import { sendOrderStatusEmail } from "../utils/emailService.js";
 
 /**
@@ -26,7 +27,7 @@ export const createOrder = async (req, res) => {
   }
 
   try {
-    const { items, shippingAddress, paymentMethod } = req.body;
+    const { items, shippingAddress, paymentMethod, couponCode, discountAmount: discount } = req.body;
 
     if (!["COD", "UPI"].includes(paymentMethod)) {
       return res.status(400).json({
@@ -61,15 +62,26 @@ export const createOrder = async (req, res) => {
       });
     }
 
+    const finalTotal = Math.max(0, totalAmount - (discount || 0));
+
     const order = await Order.create({
       user: req.user._id,
       items: populatedItems,
-      totalAmount,
+      totalAmount: finalTotal,
       paymentMethod: paymentMethod || "COD",
       paymentStatus: "Pending",
       status: "pending",
       shippingAddress: shippingAddress || {},
+      coupon: couponCode,
+      discountAmount: discount || 0,
     });
+
+    if (couponCode) {
+      await Coupon.findOneAndUpdate(
+        { code: couponCode.toUpperCase() },
+        { $inc: { usedCount: 1 } }
+      );
+    }
 
     await reduceStock(populatedItems);
     await User.findByIdAndUpdate(req.user._id, {

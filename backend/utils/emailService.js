@@ -1,4 +1,10 @@
 import nodemailer from "nodemailer";
+import dns from "dns";
+
+// Force IPv4 resolution for SMTP hosts to avoid ENETUNREACH issues with IPv6
+if (dns.setDefaultResultOrder) {
+  dns.setDefaultResultOrder("ipv4first");
+}
 
 let transporter = null;
 
@@ -17,6 +23,7 @@ function getTransporter() {
     port: port ? parseInt(port, 10) : 587,
     secure: port === "465",
     auth: { user, pass },
+    family: 4, // Force IPv4 to avoid ENETUNREACH issues with IPv6
   });
   return transporter;
 }

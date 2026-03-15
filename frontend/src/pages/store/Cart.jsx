@@ -35,6 +35,8 @@ const Cart = () => {
   const [addNewAddress, setAddNewAddress] = useState(false);
   const [address, setAddress] = useState(EMPTY_ADDRESS);
   const [defaultAddress, setDefaultAddress] = useState(null);
+  const [couponCode, setCouponCode] = useState("");
+  const [couponData, setCouponData] = useState(null);
 
   const shippingPayload = useDefaultAddress && defaultAddress ? defaultAddress : address;
 
@@ -64,6 +66,26 @@ const Cart = () => {
 
   const cartPayload = items.map((i) => ({ productId: i._id, quantity: i.quantity }));
 
+  const validateCoupon = async () => {
+    if (!couponCode) return;
+    setLoading(true);
+    try {
+      const res = await api.post("/coupons/validate", {
+        code: couponCode,
+        cartTotal: total,
+      });
+      setCouponData(res.data);
+      toast.success("Coupon applied!");
+    } catch (err) {
+      setCouponData(null);
+      toast.error(err?.response?.data?.message || "Invalid coupon");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const finalTotal = total - (couponData?.discountCalculated || 0);
+
   const handleRazorpayCheckout = async () => {
     setLoading(true);
     try {
@@ -82,6 +104,8 @@ const Cart = () => {
       const payRes = await api.post("/payments/create-order", {
         items: cartPayload,
         shippingAddress: shippingPayload,
+        couponCode: couponData?.code,
+        discountAmount: couponData?.discountCalculated,
       });
       const { orderId, amount, currency, key } = payRes.data;
       if (!orderId || !key) {
@@ -91,7 +115,7 @@ const Cart = () => {
       }
 
       const options = {
-        key: key || import.meta.env.VITE_RAZORPAY_KEY_ID,
+        key: key,
         amount,
         currency: currency || "INR",
         name: "Dog Vaathi Supplements",
@@ -104,6 +128,8 @@ const Cart = () => {
               razorpay_signature: response.razorpay_signature,
               items: cartPayload,
               shippingAddress: shippingPayload,
+              couponCode: couponData?.code,
+              discountAmount: couponData?.discountCalculated,
             });
             toast.success("Payment successful!");
             clearCart();
@@ -145,32 +171,72 @@ const Cart = () => {
   };
 
   const handleUPICheckout = async () => {
-    setShowUpiModal(true);
-  };
-
-  const confirmUpiPayment = async () => {
     setLoading(true);
     try {
-      await api.post("/orders", {
-        paymentMethod: "UPI",
+      const res = await api.post("/payments/create-qr", {
         items: cartPayload,
         shippingAddress: shippingPayload,
+        couponCode: couponData?.code,
+        discountAmount: couponData?.discountCalculated,
       });
-      toast.success("Order placed! Thank you for your UPI payment.");
-      setShowUpiModal(false);
-      clearCart();
-      navigate("/store/orders");
+      const { orderId, amount, key } = res.data;
+      
+      // We'll use the Razorpay API order ID to generate a UPI intent link
+      // For the QR code image, we can use a library or a service
+      // Here we set up polling to check if payment is captured
+      setShowUpiModal({ orderId, amount, key });
+      startPolling(orderId, cartPayload, shippingPayload);
     } catch (err) {
-      const msg =
-        err?.response?.data?.message ||
-        (Array.isArray(err?.response?.data?.errors)
-          ? err.response?.data?.errors[0]?.msg
-          : null) ||
-        "Order failed";
-      toast.error(msg);
+      toast.error(err?.response?.data?.message || "QR generation failed");
     } finally {
       setLoading(false);
     }
+  };
+
+  const pollingRef = React.useRef(null);
+  
+  const startPolling = (orderId, items, shippingAddress) => {
+    if (pollingRef.current) clearInterval(pollingRef.current);
+    
+    pollingRef.current = setInterval(async () => {
+      try {
+        const res = await api.post("/payments/check-qr-status", {
+          orderId,
+          items,
+          shippingAddress,
+          couponCode: couponData?.code,
+          discountAmount: couponData?.discountCalculated,
+        });
+        if (res.data.success) {
+          clearInterval(pollingRef.current);
+          pollingRef.current = null;
+          setShowUpiModal(false);
+          toast.success("Payment Successful!");
+          clearCart();
+          navigate("/store/orders");
+        }
+      } catch (err) {
+        console.error("Polling error:", err);
+      }
+    }, 3000);
+
+    // Stop after 10 mins
+    setTimeout(() => {
+      if (pollingRef.current) {
+        clearInterval(pollingRef.current);
+        pollingRef.current = null;
+      }
+    }, 600000);
+  };
+
+  useEffect(() => {
+    return () => {
+      if (pollingRef.current) clearInterval(pollingRef.current);
+    };
+  }, []);
+
+  const confirmUpiPayment = () => {
+    toast.error("Waiting for payment confirmation. If you've paid, please wait a few seconds...");
   };
 
   const handleCODCheckout = async () => {
@@ -180,6 +246,8 @@ const Cart = () => {
         paymentMethod: "COD",
         items: cartPayload,
         shippingAddress: shippingPayload,
+        couponCode: couponData?.code,
+        discountAmount: couponData?.discountCalculated,
       });
       toast.success("Order placed! Cash on Delivery.");
       clearCart();
@@ -313,11 +381,46 @@ const Cart = () => {
             ))}
           </div>
 
-          <div className="flex items-center justify-between rounded-2xl bg-brand-500/10 p-5 shadow-sm dark:bg-slate-800/80">
-            <p className="text-base font-semibold text-dark-900 dark:text-slate-200">Total Amount:</p>
-            <p className="text-2xl font-bold text-brand-600 dark:text-brand-400">
-              ₹ {Math.round(total)}
-            </p>
+          <div className="space-y-4 rounded-2xl bg-brand-500/10 p-5 shadow-sm dark:bg-slate-800/80">
+            <div className="flex flex-col gap-3 sm:flex-row sm:items-end">
+              <div className="flex-1">
+                <label className="mb-1 block text-xs font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400">Coupon Code</label>
+                <div className="flex gap-2">
+                  <input
+                    placeholder="Enter code"
+                    value={couponCode}
+                    onChange={(e) => setCouponCode(e.target.value.toUpperCase())}
+                    className="w-full rounded-xl border border-cream-200 bg-white px-4 py-2 text-base font-bold dark:border-slate-700 dark:bg-slate-950 dark:text-slate-100"
+                  />
+                  <button
+                    onClick={validateCoupon}
+                    disabled={loading || !couponCode}
+                    className="rounded-xl bg-brand-600 px-6 py-2 font-bold text-white transition-all hover:bg-brand-700 disabled:opacity-50"
+                  >
+                    Apply
+                  </button>
+                </div>
+              </div>
+            </div>
+
+            {couponData && (
+              <div className="flex items-center justify-between border-t border-brand-500/20 pt-3 text-base">
+                <span className="font-medium text-brand-600 dark:text-brand-400">Discount Applied ({couponData.code}):</span>
+                <span className="font-bold text-brand-600 dark:text-brand-400">- ₹ {couponData.discountCalculated}</span>
+              </div>
+            )}
+
+            <div className="flex items-center justify-between border-t border-brand-500/20 pt-3">
+              <p className="text-base font-bold text-dark-900 dark:text-slate-200">Final Total:</p>
+              <div className="text-right">
+                {couponData && (
+                  <p className="text-xs text-slate-400 line-through">₹ {Math.round(total)}</p>
+                )}
+                <p className="text-3xl font-black text-brand-600 dark:text-brand-400">
+                  ₹ {Math.round(finalTotal)}
+                </p>
+              </div>
+            </div>
           </div>
 
           {/* Delivery address */}
@@ -575,34 +678,40 @@ const Cart = () => {
                 <h3 className="mb-4 text-lg font-semibold text-slate-900 dark:text-slate-50">
                   Pay via UPI
                 </h3>
-                <p className="mb-2 text-lg text-slate-600 dark:text-slate-300">
-                  Scan the QR code with your UPI app. Amount to pay:
-                </p>
-                <p className="mb-4 text-2xl font-bold text-brand-500 dark:text-brand-400">
-                  ₹ {total.toFixed(2)}
-                </p>
-                {import.meta.env.VITE_UPI_ID && (
-                  <a
-                    href={`upi://pay?pa=${import.meta.env.VITE_UPI_ID}&pn=Dog%20Vaathi&am=${total.toFixed(2)}&cu=INR`}
-                    className="mb-4 block rounded-lg bg-brand-500 px-4 py-2 text-center text-lg font-medium text-white hover:bg-brand-600"
-                  >
-                    Open in UPI app (₹{total.toFixed(2)} pre-filled)
-                  </a>
+                {showUpiModal.amount && (
+                  <>
+                    <p className="mb-2 text-lg text-slate-600 dark:text-slate-300">
+                      Scan the QR code with your UPI app. Amount to pay:
+                    </p>
+                    <p className="mb-4 text-2xl font-bold text-brand-500 dark:text-brand-400">
+                      ₹ {(showUpiModal.amount / 100).toFixed(2)}
+                    </p>
+                    <a
+                      href={`upi://pay?pa=razorpay@icici&pn=Dog%20Vaathi&am=${(showUpiModal.amount / 100).toFixed(2)}&cu=INR&tr=${showUpiModal.orderId}`}
+                      className="mb-4 block rounded-lg bg-brand-500 px-4 py-2 text-center text-lg font-medium text-white hover:bg-brand-600"
+                    >
+                      Open in UPI app
+                    </a>
+                  </>
                 )}
-                <div className="mb-4 flex justify-center rounded-xl bg-white p-4 dark:bg-slate-800">
-                  <img
-                    src={UPI_QR_IMAGE}
+                <div className="mb-4 flex flex-col items-center justify-center rounded-xl bg-white p-4 dark:bg-slate-800">
+                   <img
+                    src={`https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=${encodeURIComponent(`upi://pay?pa=razorpay@icici&pn=Dog%20Vaathi&am=${(showUpiModal.amount / 100).toFixed(2)}&cu=INR&tr=${showUpiModal.orderId}`)}`}
                     alt="UPI QR Code"
                     className="h-56 w-56 object-contain"
-                    onError={(e) => {
-                      e.target.src = "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='200' height='200'%3E%3Crect fill='%23f1f5f9' width='200' height='200'/%3E%3Ctext x='50%25' y='50%25' dominant-baseline='middle' text-anchor='middle' fill='%2364748b' font-size='12'%3EUpload QR to public/images/upi-qr.png%3C/text%3E%3C/svg%3E";
-                    }}
                   />
+                  <p className="mt-2 text-xs text-slate-500">Scan to pay securely via Razorpay</p>
                 </div>
                 <div className="flex gap-3">
                   <button
                     type="button"
-                    onClick={() => setShowUpiModal(false)}
+                    onClick={() => {
+                      if (pollingRef.current) {
+                        clearInterval(pollingRef.current);
+                        pollingRef.current = null;
+                      }
+                      setShowUpiModal(false);
+                    }}
                     className="flex-1 rounded-lg border border-slate-300 px-4 py-2 text-lg dark:border-slate-700 dark:text-slate-200"
                   >
                     Cancel

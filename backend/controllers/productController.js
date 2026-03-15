@@ -69,19 +69,39 @@ export const createProduct = async (req, res) => {
     const { name, description, price, category, stock, tags } = req.body;
     let imageUrl = req.body.imageUrl;
     let image = undefined;
+    let arModel = undefined;
 
-    if (req.file && req.file.buffer) {
+    // Handle Image Upload
+    if (req.files?.image && req.files.image[0].buffer) {
       try {
-        const b64 = req.file.buffer.toString("base64");
-        const dataUri = `data:${req.file.mimetype || "image/jpeg"};base64,${b64}`;
+        const file = req.files.image[0];
+        const b64 = file.buffer.toString("base64");
+        const dataUri = `data:${file.mimetype || "image/jpeg"};base64,${b64}`;
         const uploadResult = await cloudinary.uploader.upload(dataUri, {
           folder: "dogvaathi/products",
         });
         imageUrl = uploadResult.secure_url;
         image = { url: uploadResult.secure_url, public_id: uploadResult.public_id };
       } catch (uploadErr) {
-        console.error("Cloudinary upload error:", uploadErr?.message || uploadErr);
-        throw new Error(uploadErr?.message || "Image upload failed. Check Cloudinary config.");
+        console.error("Cloudinary image upload error:", uploadErr);
+        throw new Error("Image upload failed");
+      }
+    }
+
+    // Handle AR Model Upload
+    if (req.files?.arModelFile && req.files.arModelFile[0].buffer) {
+      try {
+        const file = req.files.arModelFile[0];
+        const b64 = file.buffer.toString("base64");
+        const dataUri = `data:${file.mimetype || "application/octet-stream"};base64,${b64}`;
+        const uploadResult = await cloudinary.uploader.upload(dataUri, {
+          folder: "dogvaathi/products/ar_models",
+          resource_type: "raw",
+        });
+        arModel = { url: uploadResult.secure_url, public_id: uploadResult.public_id };
+      } catch (uploadErr) {
+        console.error("Cloudinary AR model upload error:", uploadErr);
+        throw new Error("3D Model upload failed");
       }
     }
 
@@ -94,6 +114,7 @@ export const createProduct = async (req, res) => {
       tags,
       imageUrl,
       image,
+      arModel,
     });
 
     res.status(201).json(product);
@@ -118,19 +139,39 @@ export const updateProduct = async (req, res) => {
       req.body;
     let imageUrl = req.body.imageUrl;
     let image = undefined;
+    let arModel = undefined;
 
-    if (req.file && req.file.buffer) {
+    // Handle Image Upload
+    if (req.files?.image && req.files.image[0].buffer) {
       try {
-        const b64 = req.file.buffer.toString("base64");
-        const dataUri = `data:${req.file.mimetype || "image/jpeg"};base64,${b64}`;
+        const file = req.files.image[0];
+        const b64 = file.buffer.toString("base64");
+        const dataUri = `data:${file.mimetype || "image/jpeg"};base64,${b64}`;
         const uploadResult = await cloudinary.uploader.upload(dataUri, {
           folder: "dogvaathi/products",
         });
         imageUrl = uploadResult.secure_url;
         image = { url: uploadResult.secure_url, public_id: uploadResult.public_id };
       } catch (uploadErr) {
-        console.error("Cloudinary upload error:", uploadErr?.message || uploadErr);
-        throw new Error(uploadErr?.message || "Image upload failed. Check Cloudinary config.");
+        console.error("Cloudinary image upload error:", uploadErr);
+        throw new Error("Image upload failed");
+      }
+    }
+
+    // Handle AR Model Upload
+    if (req.files?.arModelFile && req.files.arModelFile[0].buffer) {
+      try {
+        const file = req.files.arModelFile[0];
+        const b64 = file.buffer.toString("base64");
+        const dataUri = `data:${file.mimetype || "application/octet-stream"};base64,${b64}`;
+        const uploadResult = await cloudinary.uploader.upload(dataUri, {
+          folder: "dogvaathi/products/ar_models",
+          resource_type: "raw",
+        });
+        arModel = { url: uploadResult.secure_url, public_id: uploadResult.public_id };
+      } catch (uploadErr) {
+        console.error("Cloudinary AR model upload error:", uploadErr);
+        throw new Error("3D Model upload failed");
       }
     }
 
@@ -144,6 +185,7 @@ export const updateProduct = async (req, res) => {
         stock: stock != null ? Number(stock) : undefined,
         tags,
         isActive,
+        arModel,
         ...(imageUrl && { imageUrl }),
         ...(image && { image }),
       },
@@ -166,10 +208,22 @@ export const updateProduct = async (req, res) => {
 
 export const deleteProduct = async (req, res) => {
   try {
-    const product = await Product.findByIdAndDelete(req.params.id);
+    const product = await Product.findById(req.params.id);
     if (!product) {
       return res.status(404).json({ message: "Product not found" });
     }
+
+    // Delete image from Cloudinary
+    if (product.image?.public_id) {
+      await cloudinary.uploader.destroy(product.image.public_id);
+    }
+
+    // Delete AR model from Cloudinary (raw resource)
+    if (product.arModel?.public_id) {
+      await cloudinary.uploader.destroy(product.arModel.public_id, { resource_type: "raw" });
+    }
+
+    await product.deleteOne();
     res.json({ message: "Product deleted" });
   } catch (error) {
     console.error("Delete product error:", error);

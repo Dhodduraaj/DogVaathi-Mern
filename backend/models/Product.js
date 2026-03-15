@@ -14,6 +14,10 @@ const productSchema = new mongoose.Schema(
     },
     tags: [{ type: String }],
     isActive: { type: Boolean, default: true },
+    arModel: {
+      url: { type: String },
+      public_id: { type: String },
+    },
   },
   { timestamps: true }
 );

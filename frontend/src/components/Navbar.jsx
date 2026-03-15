@@ -39,6 +39,9 @@ const Navbar = () => {
           <NavLink to="/store/products" className={navLinkClass}>
             Store
           </NavLink>
+          <NavLink to="/ar-experience" className={navLinkClass}>
+            AR Experience
+          </NavLink>
           {user?.role === "admin" && (
             <NavLink to="/admin" className={navLinkClass}>
               Admin
