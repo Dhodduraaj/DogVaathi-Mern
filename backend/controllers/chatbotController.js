@@ -1,6 +1,6 @@
-import { GoogleGenerativeAI } from "@google/generative-ai";
+import Groq from "groq-sdk";
 
-// Simple rule-based fallback intents (used if Gemini is not configured or errors)
+// Simple rule-based fallback intents (used if Groq is not configured or errors)
 const intents = [
   {
     keywords: ["store", "shop", "supplement", "products"],
@@ -47,15 +47,14 @@ function getRuleBasedReply(message) {
   );
 }
 
-// Gemini client (lazy, via env var)
-let geminiModel = null;
-function getGeminiModel() {
-  if (geminiModel) return geminiModel;
-  const apiKey = (process.env.GEMINI_API_KEY || "").trim();
+// Groq client (lazy, via env var)
+let groqClient = null;
+function getGroqClient() {
+  if (groqClient) return groqClient;
+  const apiKey = (process.env.GROQ_API_KEY || "").trim();
   if (!apiKey) return null;
-  const genAI = new GoogleGenerativeAI(apiKey);
-  geminiModel = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
-  return geminiModel;
+  groqClient = new Groq({ apiKey });
+  return groqClient;
 }
 
 export const chatWithBot = async (req, res) => {
@@ -65,10 +64,10 @@ export const chatWithBot = async (req, res) => {
       return res.status(400).json({ message: "Message is required" });
     }
 
-    const model = getGeminiModel();
+    const client = getGroqClient();
 
-    // If Gemini is not configured, use simple rule-based reply
-    if (!model) {
+    // If Groq is not configured, use simple rule-based reply
+    if (!client) {
       const reply = getRuleBasedReply(message);
       return res.json({ reply });
     }
@@ -85,17 +84,20 @@ export const chatWithBot = async (req, res) => {
     "Do NOT invent new URLs. " +
     "If a question is unrelated to dogs, dog care, dog training, dog food, dog supplements, or this website, politely explain that you specialize in helping with Dog Vaathi's website and dog-related topics.";
   
-    const result = await model.generateContent([
-      systemPrompt,
-      `User: ${message}`,
-    ]);
-    const response = await result.response;
-    const text = (response && response.text && response.text()) || "";
+    const chatCompletion = await client.chat.completions.create({
+      messages: [
+        { role: "system", content: systemPrompt },
+        { role: "user", content: message },
+      ],
+      model: "llama-3.3-70b-versatile",
+    });
+
+    const text = chatCompletion.choices[0]?.message?.content || "";
 
     const reply = text.trim() || getRuleBasedReply(message);
     res.json({ reply });
   } catch (error) {
-    console.error("Chatbot (Gemini) error:", error);
+    console.error("Chatbot (Groq) error:", error);
     const fallback = getRuleBasedReply(req.body?.message || "");
     res.json({ reply: fallback });
   }
