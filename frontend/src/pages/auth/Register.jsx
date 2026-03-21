@@ -7,17 +7,17 @@ import { GoogleLogin } from "@react-oauth/google";
 import api from "../../utils/axios.js";
 
 const Register = () => {
-  const { register } = useAuth();
+  const { register, user } = useAuth();
   const { refreshCartFromServer } = useCart();
   const navigate = useNavigate();
   const [form, setForm] = useState({ name: "", email: "", password: "" });
   const [loading, setLoading] = useState(false);
 
   useEffect(() => {
-    if (useAuth().user) {
+    if (user) {
       navigate("/");
     }
-  }, [navigate]);
+  }, [user, navigate]);
 
   const handleChange = (e) => {
     setForm({ ...form, [e.target.name]: e.target.value });
