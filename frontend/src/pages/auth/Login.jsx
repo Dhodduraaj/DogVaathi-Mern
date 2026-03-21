@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { useAuth } from "../../context/AuthContext.jsx";
 import { useCart } from "../../context/CartContext.jsx";
@@ -12,6 +12,12 @@ const Login = () => {
   const navigate = useNavigate();
   const [form, setForm] = useState({ email: "", password: "" });
   const [loading, setLoading] = useState(false);
+
+  useEffect(() => {
+    if (useAuth().user) {
+      navigate("/");
+    }
+  }, [navigate]);
 
   const handleChange = (e) => {
     setForm({ ...form, [e.target.name]: e.target.value });
@@ -44,6 +50,7 @@ const Login = () => {
       
       localStorage.setItem("dogvaathi_token", data.token);
       localStorage.setItem("dogvaathi_user", JSON.stringify(data.user));
+      navigate("/");
       window.location.reload(); 
     } catch (err) {
       toast.error("Google login failed");
