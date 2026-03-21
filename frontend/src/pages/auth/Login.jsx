@@ -3,6 +3,8 @@ import { Link, useNavigate } from "react-router-dom";
 import { useAuth } from "../../context/AuthContext.jsx";
 import { useCart } from "../../context/CartContext.jsx";
 import toast from "react-hot-toast";
+import { GoogleLogin } from "@react-oauth/google";
+import api from "../../utils/axios.js";
 
 const Login = () => {
   const { login } = useAuth();
@@ -28,6 +30,23 @@ const Login = () => {
         err?.response?.data?.errors?.[0]?.msg ||
         "Login failed";
       toast.error(msg);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleGoogleSuccess = async (credentialResponse) => {
+    setLoading(true);
+    try {
+      const { data } = await api.post("/auth/google", {
+        token: credentialResponse.credential,
+      });
+      
+      localStorage.setItem("dogvaathi_token", data.token);
+      localStorage.setItem("dogvaathi_user", JSON.stringify(data.user));
+      window.location.reload(); 
+    } catch (err) {
+      toast.error("Google login failed");
     } finally {
       setLoading(false);
     }
@@ -67,6 +86,20 @@ const Login = () => {
           {loading ? "Logging in..." : "Login"}
         </button>
       </form>
+      
+      <div className="relative flex items-center py-2">
+        <div className="flex-grow border-t border-slate-300 dark:border-slate-700"></div>
+        <span className="mx-4 flex-shrink text-xs text-slate-500">OR</span>
+        <div className="flex-grow border-t border-slate-300 dark:border-slate-700"></div>
+      </div>
+
+      <div className="flex justify-center">
+        <GoogleLogin
+          onSuccess={handleGoogleSuccess}
+          onError={() => toast.error("Google Login Failed")}
+          useOneTap
+        />
+      </div>
       <p className="text-xs text-slate-500 dark:text-slate-400">
         New here?{" "}
         <Link to="/auth/register" className="text-brand-500 hover:text-brand-600 dark:text-brand-400 dark:hover:text-brand-300">

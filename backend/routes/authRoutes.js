@@ -1,6 +1,6 @@
 import express from "express";
 import { body } from "express-validator";
-import { register, login, getProfile } from "../controllers/authController.js";
+import { register, login, getProfile, googleLogin } from "../controllers/authController.js";
 import { protect } from "../middleware/authMiddleware.js";
 
 const router = express.Router();
@@ -25,6 +25,8 @@ router.post(
   ],
   login
 );
+
+router.post("/google", googleLogin);
 
 router.get("/me", protect, getProfile);
 

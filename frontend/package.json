@@ -9,6 +9,7 @@
     "preview": "node ./node_modules/vite/bin/vite.js preview"
   },
   "dependencies": {
+    "@react-oauth/google": "^0.13.4",
     "@react-three/fiber": "^8.18.0",
     "axios": "^1.7.2",
     "react": "^18.2.0",
